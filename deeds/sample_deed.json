@@ -1,0 +1,46 @@
+{
+  "block_id": "SB-2026-0317-00847",
+  "version": "1.0",
+  "origin": {
+    "domain": "commercial_real_estate",
+    "model": "gemma-4-31B-it-swarmgrant",
+    "node": "swarmrails-gpu0",
+    "hardware": "NVIDIA RTX PRO 6000 Blackwell (96GB)",
+    "strategy": "domain_expert_qa"
+  },
+  "quality": {
+    "judge_a": {
+      "model": "google/gemma-4-E2B-it (base, unmodified)",
+      "score": 0.89,
+      "reasoning": "Response demonstrates accurate CAP rate calculation, proper NOI derivation from rent roll, and correctly identifies deferred maintenance risk in the 312-unit Memphis multifamily. Methodology is sound and defensible."
+    },
+    "judge_b": {
+      "model": "Qwen/Qwen2.5-9B (base, unmodified)",
+      "score": 0.93,
+      "reasoning": "Comprehensive underwriting analysis with correct debt service coverage ratio, accurate vacancy adjustment for Memphis submarket, and appropriate kill decision given cap rate compression risk. All 12 math operations verified correct."
+    },
+    "final_score": 0.91
+  },
+  "process": {
+    "attempts": 1,
+    "generation_time_ms": 4200,
+    "prior_scores": []
+  },
+  "economics": {
+    "energy_joules": 1260,
+    "cost_usd": 0.005,
+    "cost_trend": "stable"
+  },
+  "trust": {
+    "merkle_root": "a3f8c1d9e4b72f8a91c3d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f562f0",
+    "merkle_leaf_index": 847,
+    "hedera_topic": "0.0.10291838",
+    "hedera_sequence": 17,
+    "hedera_timestamp": "2026-03-17T14:22:08.000Z"
+  },
+  "classification": {
+    "tier": "royal_jelly",
+    "threshold": ">= 0.75"
+  },
+  "sealed_at": "2026-03-17T14:22:08.000Z"
+}

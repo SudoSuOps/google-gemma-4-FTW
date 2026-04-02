@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Swarm & Bee Title Deed",
+  "description": "Immutable title deed for a validated AI training pair. Every deed carries five proofs: origin, quality, process, economics, and trust.",
+  "type": "object",
+  "required": ["block_id", "version", "origin", "quality", "process", "economics", "trust", "classification", "sealed_at"],
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Unique block identifier (e.g. SB-2026-0402-00001)",
+      "pattern": "^SB-\\d{4}-\\d{4}-\\d{5}$"
+    },
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Deed schema version"
+    },
+    "origin": {
+      "type": "object",
+      "description": "Proof 01: Where this pair came from",
+      "required": ["domain", "model", "node", "hardware", "strategy"],
+      "properties": {
+        "domain": { "type": "string", "description": "Subject domain (e.g. healthcare, CRE, education)" },
+        "model": { "type": "string", "description": "Writer model that generated the pair" },
+        "node": { "type": "string", "description": "Node identifier that produced the pair" },
+        "hardware": { "type": "string", "description": "GPU/hardware that ran inference" },
+        "strategy": { "type": "string", "description": "Generation strategy used" }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "description": "Proof 02: Deterministic quality score, not opinion",
+      "required": ["judge_a", "judge_b", "final_score"],
+      "properties": {
+        "judge_a": {
+          "type": "object",
+          "required": ["model", "score", "reasoning"],
+          "properties": {
+            "model": { "type": "string", "description": "Base model name (unmodified, published state)" },
+            "score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "reasoning": { "type": "string", "description": "Judge reasoning for the score" }
+          }
+        },
+        "judge_b": {
+          "type": "object",
+          "required": ["model", "score", "reasoning"],
+          "properties": {
+            "model": { "type": "string", "description": "Second independent base model" },
+            "score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "reasoning": { "type": "string" }
+          }
+        },
+        "final_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "Average of both judges" }
+      }
+    },
+    "process": {
+      "type": "object",
+      "description": "Proof 03: Full lineage — tried, failed, survived",
+      "required": ["attempts", "generation_time_ms"],
+      "properties": {
+        "attempts": { "type": "integer", "description": "Total generation attempts before acceptance" },
+        "generation_time_ms": { "type": "integer", "description": "Total generation time in milliseconds" },
+        "prior_scores": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Scores from prior attempts (shows improvement trajectory)"
+        }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "description": "Proof 04: Energy cost and cost-per-deed trend",
+      "required": ["energy_joules", "cost_usd"],
+      "properties": {
+        "energy_joules": { "type": "number", "description": "Total energy consumed for this deed" },
+        "cost_usd": { "type": "number", "description": "Total cost including electricity, hardware depreciation" },
+        "cost_trend": { "type": "string", "description": "Trend vs rolling window (improving/stable/degrading)" }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "description": "Proof 05: Blockchain anchor",
+      "required": ["merkle_root", "merkle_leaf_index"],
+      "properties": {
+        "merkle_root": { "type": "string", "description": "SHA256 Merkle root of the batch containing this deed" },
+        "merkle_leaf_index": { "type": "integer", "description": "Position of this deed in the Merkle tree" },
+        "hedera_topic": { "type": "string", "description": "Hedera HCS topic ID (e.g. 0.0.10291838)" },
+        "hedera_sequence": { "type": "integer", "description": "Message sequence number on the topic" },
+        "hedera_timestamp": { "type": "string", "description": "Hedera consensus timestamp" }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "required": ["tier", "threshold"],
+      "properties": {
+        "tier": { "type": "string", "enum": ["royal_jelly", "honey", "propolis"] },
+        "threshold": { "type": "string", "description": "Score range for this tier" }
+      }
+    },
+    "sealed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when the deed was sealed"
+    }
+  }
+}
