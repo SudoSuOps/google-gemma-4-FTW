@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmShop — Defendable AI Data Shop</title>
+<style>
+:root{--bg:#05050a;--card:#0a0a12;--card2:#0e0e16;--border:#161622;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--royal:#d4a017;--honey:#a88a14;--propolis:#4a4a5a;--green:#22c55e;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+.nav{position:fixed;top:0;width:100%;background:rgba(5,5,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100}
+.nav-logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:3px;font-weight:700}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{font-family:var(--mono);font-size:10px;color:var(--dim);text-decoration:none;letter-spacing:1px;text-transform:uppercase}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{border:1px solid var(--accent) !important;color:var(--accent) !important;padding:4px 14px}
+
+/* HERO */
+.hero{padding:100px 32px 60px;text-align:center;max-width:800px;margin:0 auto}
+.hero h1{font-size:40px;font-weight:800;letter-spacing:-1px;margin-bottom:12px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--dim);font-size:15px;line-height:1.8;max-width:560px;margin:0 auto 32px}
+.hero-stats{display:flex;justify-content:center;gap:40px;margin-bottom:40px}
+.hero-stat{text-align:center}
+.hero-stat .val{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--text)}
+.hero-stat .lbl{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:2px;margin-top:2px;text-transform:uppercase}
+
+/* DOMAIN CARDS */
+.offerings{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:24px}
+
+.domain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+
+.domain-card{background:var(--card);border:1px solid var(--border);padding:0;transition:border-color 0.3s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+.domain-card:hover{border-color:var(--accent)}
+
+.domain-header{padding:24px 24px 16px;border-bottom:1px solid var(--border)}
+.domain-badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.domain-name{font-size:22px;font-weight:700;margin-bottom:4px}
+.domain-desc{font-size:13px;color:var(--dim);line-height:1.6}
+
+.domain-stats{padding:16px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
+.dstat{text-align:center;padding:8px 0;border-right:1px solid var(--border)}
+.dstat:last-child{border-right:none}
+.dstat .v{font-family:var(--mono);font-size:16px;font-weight:700}
+.dstat .l{font-family:var(--mono);font-size:8px;color:var(--dim);letter-spacing:1px;margin-top:2px;text-transform:uppercase}
+
+.domain-tiers{padding:16px 24px;display:flex;gap:8px}
+.tier-bar{height:8px;border-radius:1px;transition:width 0.5s}
+.tier-rj{background:var(--royal)}
+.tier-ho{background:var(--honey)}
+.tier-pr{background:var(--propolis)}
+
+.domain-footer{padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+.domain-price{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.domain-action{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;border:1px solid var(--accent);padding:6px 16px;text-decoration:none;transition:background 0.2s}
+.domain-action:hover{background:rgba(212,160,23,0.1)}
+
+/* SAMPLE DEED */
+.deed-section{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.deed-box{background:var(--card);border:1px solid var(--border);padding:32px;font-family:var(--mono);font-size:12px;line-height:2.2}
+.deed-title{font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:16px}
+.deed-row{display:flex;gap:16px}
+.deed-key{color:var(--dim);min-width:90px}
+.deed-val{color:var(--text)}
+.deed-rj{color:var(--royal);font-weight:700}
+.deed-link{color:var(--accent);text-decoration:none}
+
+/* PROOF STRIP */
+.proof-strip{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.proof-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.proof-card{background:var(--bg);padding:20px;text-align:center}
+.proof-num{font-family:var(--mono);font-size:10px;color:var(--accent);margin-bottom:4px}
+.proof-name{font-weight:600;font-size:13px;margin-bottom:4px}
+.proof-desc{font-size:11px;color:var(--dim);line-height:1.5}
+
+/* HOW IT WORKS */
+.how{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{background:var(--card);border:1px solid var(--border);padding:24px}
+.step-num{font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px}
+.step-title{font-weight:600;margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--dim);line-height:1.6}
+
+/* CTA */
+.cta-section{text-align:center;padding:80px 32px;border-top:1px solid var(--border)}
+.cta-section h2{font-size:24px;margin-bottom:8px}
+.cta-section p{color:var(--dim);margin-bottom:24px;font-size:14px}
+.cta-btn{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--bg);background:var(--accent);padding:12px 32px;text-decoration:none;text-transform:uppercase}
+.cta-btn:hover{opacity:0.85}
+
+/* FOOTER */
+.footer{text-align:center;padding:32px;font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:1px;border-top:1px solid var(--border)}
+.footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:768px){
+    .domain-grid{grid-template-columns:1fr}
+    .proof-grid{grid-template-columns:repeat(2,1fr)}
+    .proof-grid .proof-card:last-child{grid-column:span 2}
+    .steps{grid-template-columns:1fr}
+    .hero-stats{flex-wrap:wrap;gap:20px}
+    .domain-stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+    <div class="nav-logo">SWARMSHOP</div>
+    <div class="nav-links">
+        <a href="#offerings">Offerings</a>
+        <a href="#proof">Proof</a>
+        <a href="#how">How It Works</a>
+        <a href="https://swarmgraph.eth.limo" target="_blank">Graph</a>
+        <a href="https://swarmandbee.ai/#contact" class="nav-cta">Book a Tour</a>
+    </div>
+</div>
+
+<div class="hero">
+    <h1>Defendable AI <span>Inventory</span></h1>
+    <p>Every pair scored by independent base models. Every pair titled with an immutable deed. Every batch anchored to Hedera. Browse offerings. Verify independently. Buy with confidence.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="val" id="total-pairs">1,303,981</div><div class="lbl">Deeded Pairs</div></div>
+        <div class="hero-stat"><div class="val">4</div><div class="lbl">Domains</div></div>
+        <div class="hero-stat"><div class="val">$0.005</div><div class="lbl">Per Deed</div></div>
+        <div class="hero-stat"><div class="val" style="color:var(--green)">LIVE</div><div class="lbl">Tribunal</div></div>
+    </div>
+</div>
+
+<div class="offerings" id="offerings">
+    <div class="section-label">Available Offerings</div>
+    <div class="domain-grid">
+
+        <!-- MEDICAL -->
+        <div class="domain-card" onclick="location.href='#om-medical'">
+            <div class="domain-header">
+                <div class="domain-badge">Healthcare & Sciences</div>
+                <div class="domain-name">Medical Intelligence</div>
+                <div class="domain-desc">61 specialties. Internal medicine, surgery, neurology, pharmacology, cardiology, pediatrics, psychiatry, and 54 more. Board-certified level responses.</div>
+            </div>
+            <div class="domain-stats">
+                <div class="dstat"><div class="v">417K</div><div class="l">Pairs</div></div>
+                <div class="dstat"><div class="v">61</div><div class="l">Specialties</div></div>
+                <div class="dstat"><div class="v">229K</div><div class="l">Est. RJ</div></div>
+                <div class="dstat"><div class="v" style="color:var(--royal)">55%</div><div class="l">RJ Yield</div></div>
+            </div>
+            <div class="domain-tiers">
+                <div class="tier-bar tier-rj" style="flex:55"></div>
+                <div class="tier-bar tier-ho" style="flex:30"></div>
+                <div class="tier-bar tier-pr" style="flex:15"></div>
+            </div>
+            <div class="domain-footer">
+                <div class="domain-price">Est. $2,085 total</div>
+                <span class="domain-action">View OM</span>
+            </div>
+        </div>
+
+        <!-- CRE -->
+        <div class="domain-card" onclick="location.href='#om-cre'">
+            <div class="domain-header">
+                <div class="domain-badge">Commercial Real Estate</div>
+                <div class="domain-name">CRE Intelligence</div>
+                <div class="domain-desc">Underwriting, NOI analysis, cap rates, rent rolls, 1031 exchanges, DSCR calculations. Multifamily, industrial, cold storage, medical office.</div>
+            </div>
+            <div class="domain-stats">
+                <div class="dstat"><div class="v">810K</div><div class="l">Pairs</div></div>
+                <div class="dstat"><div class="v">12+</div><div class="l">Asset Types</div></div>
+                <div class="dstat"><div class="v">445K</div><div class="l">Est. RJ</div></div>
+                <div class="dstat"><div class="v" style="color:var(--royal)">55%</div><div class="l">RJ Yield</div></div>
+            </div>
+            <div class="domain-tiers">
+                <div class="tier-bar tier-rj" style="flex:55"></div>
+                <div class="tier-bar tier-ho" style="flex:30"></div>
+                <div class="tier-bar tier-pr" style="flex:15"></div>
+            </div>
+            <div class="domain-footer">
+                <div class="domain-price">Est. $4,050 total</div>
+                <span class="domain-action">View OM</span>
+            </div>
+        </div>
+
+        <!-- AVIATION -->
+        <div class="domain-card" onclick="location.href='#om-aviation'">
+            <div class="domain-header">
+                <div class="domain-badge">Global Resilience</div>
+                <div class="domain-name">Aviation Intelligence</div>
+                <div class="domain-desc">A&P/IA maintenance engineering. Airworthiness evaluation, inspection procedures, regulatory compliance. 5-step trajectory analysis methodology.</div>
+            </div>
+            <div class="domain-stats">
+                <div class="dstat"><div class="v">41K</div><div class="l">Pairs</div></div>
+                <div class="dstat"><div class="v">5-Step</div><div class="l">Methodology</div></div>
+                <div class="dstat"><div class="v">22K</div><div class="l">Est. RJ</div></div>
+                <div class="dstat"><div class="v" style="color:var(--royal)">55%</div><div class="l">RJ Yield</div></div>
+            </div>
+            <div class="domain-tiers">
+                <div class="tier-bar tier-rj" style="flex:55"></div>
+                <div class="tier-bar tier-ho" style="flex:30"></div>
+                <div class="tier-bar tier-pr" style="flex:15"></div>
+            </div>
+            <div class="domain-footer">
+                <div class="domain-price">Est. $207 total</div>
+                <span class="domain-action">View OM</span>
+            </div>
+        </div>
+
+        <!-- GRANTS -->
+        <div class="domain-card" onclick="location.href='#om-grants'">
+            <div class="domain-header">
+                <div class="domain-badge">Digital Equity</div>
+                <div class="domain-name">Grants Intelligence</div>
+                <div class="domain-desc">Federal grants, SBIR/STTR proposals, NSF/NIH reviewer responses, resubmission strategies, SAM.gov registration, compliance frameworks.</div>
+            </div>
+            <div class="domain-stats">
+                <div class="dstat"><div class="v">35K</div><div class="l">Pairs</div></div>
+                <div class="dstat"><div class="v">27</div><div class="l">Streams</div></div>
+                <div class="dstat"><div class="v">19K</div><div class="l">Est. RJ</div></div>
+                <div class="dstat"><div class="v" style="color:var(--royal)">55%</div><div class="l">RJ Yield</div></div>
+            </div>
+            <div class="domain-tiers">
+                <div class="tier-bar tier-rj" style="flex:55"></div>
+                <div class="tier-bar tier-ho" style="flex:30"></div>
+                <div class="tier-bar tier-pr" style="flex:15"></div>
+            </div>
+            <div class="domain-footer">
+                <div class="domain-price">Est. $176 total</div>
+                <span class="domain-action">View OM</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SAMPLE DEED -->
+<div class="deed-section">
+    <div class="section-label">Sample Deed</div>
+    <div class="deed-box">
+        <div class="deed-title">TITLE DEED — FIVE PROOFS</div>
+        <div class="deed-row"><span class="deed-key">BLOCK</span><span class="deed-val">SB-2026-0403-00847</span></div>
+        <div class="deed-row"><span class="deed-key">SCORE</span><span class="deed-rj">0.91 — ROYAL JELLY</span></div>
+        <div class="deed-row"><span class="deed-key">JUDGE A</span><span class="deed-val">Gemma-3-12B (0.89) — base, unmodified</span></div>
+        <div class="deed-row"><span class="deed-key">JUDGE B</span><span class="deed-val">Qwen-2.5-7B (0.93) — base, unmodified</span></div>
+        <div class="deed-row"><span class="deed-key">PASS 1</span><span class="deed-val">A: 0.88 B: 0.92</span></div>
+        <div class="deed-row"><span class="deed-key">PASS 2</span><span class="deed-val">A: 0.90 B: 0.94 — DRIFT: 0.02 VALIDATED</span></div>
+        <div class="deed-row"><span class="deed-key">DOMAIN</span><span class="deed-val">Commercial Real Estate</span></div>
+        <div class="deed-row"><span class="deed-key">HARDWARE</span><span class="deed-val">RTX PRO 6000 Blackwell (96GB) + RTX 3090 (24GB)</span></div>
+        <div class="deed-row"><span class="deed-key">COST</span><span class="deed-val">$0.005 | 1,260 J</span></div>
+        <div class="deed-row"><span class="deed-key">MERKLE</span><span class="deed-val">a3f8c1d9e4b7...62f0</span></div>
+        <div class="deed-row"><span class="deed-key">SEALED</span><span class="deed-val">2026-04-03 14:22:08 UTC</span></div>
+        <div class="deed-row"><span class="deed-key">ANCHOR</span><a class="deed-link" href="https://hashscan.io/mainnet/topic/0.0.10291838" target="_blank">VERIFY ON HEDERA →</a></div>
+    </div>
+</div>
+
+<!-- FIVE PROOFS -->
+<div class="proof-strip" id="proof">
+    <div class="section-label">Every Deed Carries Five Proofs</div>
+    <div class="proof-grid">
+        <div class="proof-card"><div class="proof-num">01</div><div class="proof-name">Origin</div><div class="proof-desc">Model, node, hardware, strategy</div></div>
+        <div class="proof-card"><div class="proof-num">02</div><div class="proof-name">Quality</div><div class="proof-desc">Deterministic dual-judge score</div></div>
+        <div class="proof-card"><div class="proof-num">03</div><div class="proof-name">Process</div><div class="proof-desc">Full lineage: tried, failed, survived</div></div>
+        <div class="proof-card"><div class="proof-num">04</div><div class="proof-name">Economics</div><div class="proof-desc">Energy cost, cost-per-deed trend</div></div>
+        <div class="proof-card"><div class="proof-num">05</div><div class="proof-name">Trust</div><div class="proof-desc">Hedera HCS anchor, Merkle root</div></div>
+    </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how" id="how">
+    <div class="section-label">How It Works</div>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-title">Browse Offerings</div>
+            <div class="step-desc">Review domain OMs. Each offering includes pair count, specialty breakdown, tier distribution, sample deeds, and pricing.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-title">Free Calibration</div>
+            <div class="step-desc">Send us 50 of your own pairs. We run them through the tribunal and return a scored report with tier breakdown. No commitment.</div>
+        </div>
+        <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-title">Verify & Close</div>
+            <div class="step-desc">You receive deeded pairs + Merkle proofs + Hedera receipt + verification script + your own swarmdeed.eth subdomain. Verify everything yourself.</div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+    <h2>Pricing starts with a conversation.</h2>
+    <p>Free 50-pair calibration on your data. Scored report within 48 hours. No commitment.</p>
+    <a href="https://swarmandbee.ai/#contact" class="cta-btn">Book a Tour</a>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    SWARM & BEE LLC — DEFENDABLE AI INTELLIGENCE<br><br>
+    <a href="https://swarmandbee.ai">swarmandbee.ai</a> &nbsp;·&nbsp;
+    <a href="https://swarmgraph.eth.limo">swarmgraph.eth</a> &nbsp;·&nbsp;
+    <a href="https://hashscan.io/mainnet/topic/0.0.10291838">hedera</a> &nbsp;·&nbsp;
+    <a href="https://github.com/SudoSuOps">github</a> &nbsp;·&nbsp;
+    <a href="mailto:build@swarmandbee.ai">build@swarmandbee.ai</a>
+</div>
+
+</body>
+</html>
