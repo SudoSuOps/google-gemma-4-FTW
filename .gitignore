@@ -8,3 +8,5 @@ output/
 __pycache__/
 *.pyc
 .env
+.aidesigner/*
+!.aidesigner/.gitkeep
