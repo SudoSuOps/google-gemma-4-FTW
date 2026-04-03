@@ -1,0 +1,10 @@
+# Data files — too large for git, stored on rails + NAS
+domains/*/tribunal_ready/*.jsonl
+domains/*/scored/*.jsonl
+domains/*/deeds/*.jsonl
+domains/*/royal_jelly/*.jsonl
+domains/*/raw/*.jsonl
+output/
+__pycache__/
+*.pyc
+.env
