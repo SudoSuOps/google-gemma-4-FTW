@@ -112,8 +112,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
     <div class="nav-logo">SWARM<span>TITLE</span></div>
     <div class="nav-links">
         <a href="#process">Process</a>
+        <a href="#insurance">Premium</a>
+        <a href="#permit">Permit</a>
         <a href="#judges">Judges</a>
-        <a href="#deed">Deed Anatomy</a>
+        <a href="#deed">Deed</a>
         <a href="#hedera">Hedera</a>
         <div class="nav-seal">INDEPENDENT CERTIFIER</div>
     </div>
@@ -126,9 +128,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
     <p class="hero-sub">SwarmTitle is the independent certification arm of Swarm & Bee. Two base-model judges. Two-pass validation. Five-proof deeds. Hedera-anchored. We certify AI training data the way a title company certifies real estate.</p>
     <div class="hero-statement">
         <strong>The title company promise:</strong><br>
-        Our judges are base models — unmodified, deterministic, reproducible.<br>
-        Run the same function, get the same score. We don't have opinions.<br>
-        We have <strong>deterministic functions</strong> and <strong>blockchain receipts</strong>.
+        We are aligned to <strong>judgment</strong>, not a model.<br>
+        The buyer selects their judges. Models evolve. The process is permanent.<br>
+        Two base models. Two passes. Deterministic. Reproducible.<br>
+        We don't have opinions. We have <strong>protocol</strong> and <strong>blockchain receipts</strong>.
     </div>
 </div>
 
@@ -219,11 +222,87 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
 
 <div class="divider"></div>
 
+<!-- TITLE PREMIUM -->
+<div class="section" id="insurance">
+    <div class="section-label">Title Premium</div>
+    <div class="section-title">Every deed is insured.</div>
+    <div class="section-desc">Like title insurance in real estate — the premium protects the buyer. If the deed is wrong, we make it right.</div>
+    <div class="split">
+        <div class="split-card" style="background:var(--card)">
+            <h3 style="color:var(--accent)">What the Premium Covers</h3>
+            <div class="split-item">Score non-reproducibility — if the deterministic function returns a different score, we re-score the entire batch at no cost</div>
+            <div class="split-item">Merkle tree mismatch — if recomputed root doesn't match anchored root, we re-anchor and issue corrected deeds</div>
+            <div class="split-item">Judge drift discovered post-issuance — if calibration audit reveals systematic drift, affected deeds are re-scored</div>
+            <div class="split-item">Data integrity — if pair fingerprint doesn't match deed fingerprint, full batch review at no cost</div>
+            <div class="split-item">Hedera anchor failure — if the consensus timestamp doesn't verify on hashscan, we re-anchor on a new topic sequence</div>
+        </div>
+        <div class="split-card" style="background:var(--card)">
+            <h3 style="color:var(--text)">Premium Structure</h3>
+            <div style="font-family:var(--mono);font-size:11px;line-height:2.2;color:var(--dim)">
+                <div><span style="color:var(--text)">Standard:  </span>included in $0.005/deed</div>
+                <div><span style="color:var(--text)">Coverage:  </span>score accuracy + Merkle integrity + anchor validity</div>
+                <div><span style="color:var(--text)">Duration:  </span>perpetual (deeds don't expire)</div>
+                <div><span style="color:var(--text)">Claim:     </span>submit deed ID + evidence → 48hr resolution</div>
+                <div><span style="color:var(--text)">Remedy:    </span>re-score, re-deed, re-anchor, or full refund</div>
+                <div style="margin-top:12px;color:var(--accent);font-size:10px;letter-spacing:1px">THE DEED IS THE INSURANCE POLICY.<br>THE HEDERA ANCHOR IS THE PROOF.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PERMIT PROCESS -->
+<div class="section" id="permit">
+    <div class="section-label">Permit Protocol</div>
+    <div class="section-title">No permit, no build. Every run is authorized.</div>
+    <div class="section-desc">Permits are pulled from <strong style="color:var(--accent)">SwarmBuild</strong> (swarmuild.eth). Before any tribunal run executes, a flight sheet must be reviewed and approved. SwarmTitle verifies the permit was pulled correctly. Hidden settings are a liability. All settings frozen and visible.</div>
+
+    <div class="deed-anatomy" style="margin-bottom:24px">
+        <div class="deed-title">SAMPLE PERMIT — FLIGHT SHEET</div>
+        <div class="proof-row"><div class="proof-num">01</div><div class="proof-name">Domain</div><div class="proof-detail">Medical — 61 specialties, 1,000 pairs queued for tribunal</div></div>
+        <div class="proof-row"><div class="proof-num">02</div><div class="proof-name">Judges</div><div class="proof-detail">A: gemma3:12b (base, seq 715) · B: qwen2.5:7b (base, seq 716) · Protocol: 2-pass</div></div>
+        <div class="proof-row"><div class="proof-num">03</div><div class="proof-name">Hardware</div><div class="proof-detail">GPU 1: RTX PRO 6000 Blackwell 96GB (300W cap) · Whale: RTX 3090 24GB</div></div>
+        <div class="proof-row"><div class="proof-num">04</div><div class="proof-name">Settings</div><div class="proof-detail">Temperature: 0.1 · Max tokens: 200 · Batch size: 10 · Drift threshold: 0.15 · FROZEN</div></div>
+        <div class="proof-row"><div class="proof-num">05</div><div class="proof-name">Estimate</div><div class="proof-detail">Cost: $5.00 (1,000 × $0.005) · Energy: ~1.26 MJ · ETA: ~4 hours · Est. RJ yield: 97%</div></div>
+        <div class="proof-row"><div class="proof-num">06</div><div class="proof-name">Approval</div><div class="proof-detail">Reviewed by: [operator] · Approved: [timestamp] · Permit ID: PRM-2026-0403-001</div></div>
+    </div>
+
+    <div class="process-grid">
+        <div class="process-card">
+            <div class="process-num">STEP 1</div>
+            <div class="process-name">Submit Flight Sheet</div>
+            <div class="process-desc">Operator fills out: domain, pair count, judge assignments, hardware, settings, estimated cost. All fields required.</div>
+        </div>
+        <div class="process-card">
+            <div class="process-num">STEP 2</div>
+            <div class="process-name">Review & Approve</div>
+            <div class="process-desc">Authorized reviewer inspects every setting. Settings are FROZEN at approval. No changes after permit is issued.</div>
+        </div>
+        <div class="process-card">
+            <div class="process-num">STEP 3</div>
+            <div class="process-name">Execute Under Permit</div>
+            <div class="process-desc">Tribunal runs with EXACTLY the permitted settings. Permit ID recorded on every deed. Auditable forever.</div>
+        </div>
+    </div>
+
+    <div class="verify-box">
+        <div class="verify-label">Permit Rule</div>
+        <p style="font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.8">
+            No flight sheet → no permit → no tribunal → no deeds.<br>
+            Hidden settings = liability. All settings frozen and visible.<br>
+            Every deed traces back to its permit.
+        </p>
+    </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- JUDGES -->
 <div class="section" id="judges">
     <div class="section-label">Registered Judges</div>
-    <div class="section-title">Two judges. Two machines. Hedera-registered.</div>
-    <div class="section-desc">Both registered on Hedera mainnet (Event topic 0.0.10291836, seq 715-716). Publicly verifiable.</div>
+    <div class="section-title">Model-agnostic. Buyer selects. Protocol certifies.</div>
+    <div class="section-desc">SwarmTitle is aligned to judgment, not a model. The buyer picks two independent base models. The protocol validates they're base, deterministic, and stable. Models evolve — the process is permanent. Current default judges are registered on Hedera mainnet (seq 715-716).</div>
     <div class="judge-grid">
         <div class="judge-card">
             <div class="judge-name">SwarmTribunal-JudgeA</div>
