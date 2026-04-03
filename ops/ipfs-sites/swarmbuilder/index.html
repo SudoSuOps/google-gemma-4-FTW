@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmBuilder — Permits, Plans & Flight Sheets</title>
+<style>
+:root{--bg:#03030a;--card:#080812;--border:#121220;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--text)}
+.nav{position:fixed;top:0;width:100%;background:rgba(3,3,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100}
+.nav-logo{font-family:var(--mono);font-size:13px;letter-spacing:3px;font-weight:700}
+.nav-logo span{color:var(--accent)}
+.nav-badge{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;border:1px solid var(--accent);padding:4px 12px}
+.hero{padding:120px 32px 80px;text-align:center;max-width:700px;margin:0 auto}
+.hero-badge{font-family:var(--mono);font-size:9px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.hero h1{font-size:34px;font-weight:800;line-height:1.15;margin-bottom:16px}
+.hero h1 span{color:var(--accent)}
+.hero-sub{color:var(--dim);font-size:14px;line-height:1.8;margin-bottom:32px}
+.hero-rule{font-family:var(--mono);font-size:13px;color:var(--accent);border:1px solid var(--accent);padding:16px 24px;display:inline-block;letter-spacing:2px}
+.section{max-width:900px;margin:0 auto;padding:80px 32px}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.section-title{font-size:22px;font-weight:700;margin-bottom:8px}
+.section-desc{color:var(--dim);font-size:13px;line-height:1.7;margin-bottom:32px;max-width:600px}
+.divider{height:1px;background:var(--border);max-width:900px;margin:0 auto}
+
+/* FLIGHT SHEET */
+.flight-sheet{background:var(--card);border:1px solid var(--border);padding:0;margin-bottom:32px}
+.fs-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.fs-title{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:2px}
+.fs-status{font-family:var(--mono);font-size:9px;padding:4px 10px;letter-spacing:1px}
+.fs-approved{color:var(--green);border:1px solid var(--green)}
+.fs-pending{color:var(--accent);border:1px solid var(--accent)}
+.fs-body{padding:0}
+.fs-section{padding:16px 24px;border-bottom:1px solid var(--border)}
+.fs-section-label{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;text-transform:uppercase}
+.fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.fs-field{padding:8px 0;border-bottom:1px solid rgba(18,18,32,0.5)}
+.fs-key{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:1px}
+.fs-val{font-family:var(--mono);font-size:11px;color:var(--text);margin-top:2px}
+.fs-val.locked{color:var(--green)}
+.fs-val.warn{color:var(--accent)}
+.fs-footer{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;background:rgba(34,197,94,0.03)}
+.fs-permit{font-family:var(--mono);font-size:10px;color:var(--green)}
+.fs-sig{font-family:var(--mono);font-size:9px;color:var(--dim)}
+
+/* PROCESS */
+.permit-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pf-step{background:var(--card);border:1px solid var(--border);padding:20px;text-align:center}
+.pf-num{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.pf-name{font-weight:600;font-size:13px;margin-bottom:6px}
+.pf-desc{font-size:11px;color:var(--dim);line-height:1.5}
+.pf-arrow{display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:18px}
+
+/* WHAT GETS FROZEN */
+.frozen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.frozen-card{background:var(--card);border:1px solid var(--border);padding:16px}
+.frozen-icon{font-family:var(--mono);font-size:11px;color:var(--green);margin-bottom:6px}
+.frozen-name{font-weight:600;font-size:12px;margin-bottom:4px}
+.frozen-desc{font-size:11px;color:var(--dim);line-height:1.5}
+
+/* VIOLATIONS */
+.violation-box{background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);padding:24px;margin-top:24px}
+.violation-title{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:12px}
+.violation-item{font-size:12px;color:var(--dim);padding:4px 0;padding-left:16px;position:relative;line-height:1.6}
+.violation-item::before{content:'';position:absolute;left:0;top:10px;width:6px;height:1px;background:var(--red)}
+
+.footer{text-align:center;padding:40px 32px;font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:1px;border-top:1px solid var(--border)}
+.footer a{color:var(--accent);text-decoration:none}
+@media(max-width:768px){.permit-flow,.frozen-grid,.fs-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="nav">
+    <div class="nav-logo">SWARM<span>BUILDER</span></div>
+    <div class="nav-badge">PERMIT OFFICE</div>
+</div>
+
+<div class="hero">
+    <div class="hero-badge">Plans, Permits & Flight Sheets</div>
+    <h1>No permit.<br>No <span>build</span>.</h1>
+    <p class="hero-sub">Every tribunal run requires an approved flight sheet. Every setting frozen before execution. Every permit recorded. Hidden settings are a liability.</p>
+    <div class="hero-rule">ALL RUNS ARE PERMITTED</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SAMPLE FLIGHT SHEET -->
+<div class="section">
+    <div class="section-label">Flight Sheet</div>
+    <div class="section-title">The architectural plan for every run.</div>
+    <div class="section-desc">Like blueprints submitted to the city — every detail specified, reviewed, and approved before a single pair is scored.</div>
+
+    <div class="flight-sheet">
+        <div class="fs-header">
+            <div class="fs-title">FLIGHT SHEET — PRM-2026-0403-001</div>
+            <div class="fs-status fs-approved">APPROVED</div>
+        </div>
+        <div class="fs-section">
+            <div class="fs-section-label">Job Specification</div>
+            <div class="fs-grid">
+                <div class="fs-field"><div class="fs-key">DOMAIN</div><div class="fs-val">Medical — 61 specialties</div></div>
+                <div class="fs-field"><div class="fs-key">PAIR COUNT</div><div class="fs-val">5,000</div></div>
+                <div class="fs-field"><div class="fs-key">SOURCE</div><div class="fs-val">MASTER_PLATINUM.jsonl</div></div>
+                <div class="fs-field"><div class="fs-key">BATCH SIZE</div><div class="fs-val locked">10 (frozen)</div></div>
+            </div>
+        </div>
+        <div class="fs-section">
+            <div class="fs-section-label">Judge Assignment</div>
+            <div class="fs-grid">
+                <div class="fs-field"><div class="fs-key">JUDGE A</div><div class="fs-val locked">gemma3:12b — BASE UNMODIFIED</div></div>
+                <div class="fs-field"><div class="fs-key">JUDGE B</div><div class="fs-val locked">qwen2.5:7b — BASE UNMODIFIED</div></div>
+                <div class="fs-field"><div class="fs-key">PROTOCOL</div><div class="fs-val locked">2-PASS VALIDATION</div></div>
+                <div class="fs-field"><div class="fs-key">DRIFT THRESHOLD</div><div class="fs-val locked">0.15 MAX</div></div>
+            </div>
+        </div>
+        <div class="fs-section">
+            <div class="fs-section-label">Hardware Assignment</div>
+            <div class="fs-grid">
+                <div class="fs-field"><div class="fs-key">JUDGE A NODE</div><div class="fs-val">swarmrails-gpu1 — RTX PRO 6000 Blackwell 96GB</div></div>
+                <div class="fs-field"><div class="fs-key">JUDGE B NODE</div><div class="fs-val">whale-gpu0 — RTX 3090 24GB</div></div>
+                <div class="fs-field"><div class="fs-key">POWER CAP</div><div class="fs-val locked">300W / 350W</div></div>
+                <div class="fs-field"><div class="fs-key">NETWORK</div><div class="fs-val">LAN 192.168.0.x (air-gapped from internet)</div></div>
+            </div>
+        </div>
+        <div class="fs-section">
+            <div class="fs-section-label">Scoring Parameters</div>
+            <div class="fs-grid">
+                <div class="fs-field"><div class="fs-key">TEMPERATURE</div><div class="fs-val locked">0.1 (frozen)</div></div>
+                <div class="fs-field"><div class="fs-key">MAX TOKENS</div><div class="fs-val locked">200 (frozen)</div></div>
+                <div class="fs-field"><div class="fs-key">PROMPT VERSION</div><div class="fs-val locked">SCORING_PROMPT_v1 (SHA256 hash on file)</div></div>
+                <div class="fs-field"><div class="fs-key">CLASSIFICATION</div><div class="fs-val locked">RJ ≥0.75 · Honey 0.50-0.74 · Propolis &lt;0.50</div></div>
+            </div>
+        </div>
+        <div class="fs-section">
+            <div class="fs-section-label">Economics Estimate</div>
+            <div class="fs-grid">
+                <div class="fs-field"><div class="fs-key">COST ESTIMATE</div><div class="fs-val">$25.00 (5,000 × $0.005)</div></div>
+                <div class="fs-field"><div class="fs-key">ENERGY ESTIMATE</div><div class="fs-val">~6.3 MJ</div></div>
+                <div class="fs-field"><div class="fs-key">ETA</div><div class="fs-val">~20 hours</div></div>
+                <div class="fs-field"><div class="fs-key">EST. RJ YIELD</div><div class="fs-val warn">87-97% (based on prior runs)</div></div>
+            </div>
+        </div>
+        <div class="fs-footer">
+            <div class="fs-permit">PERMIT ISSUED: PRM-2026-0403-001</div>
+            <div class="fs-sig">Approved by: operator · 2026-04-03 15:05 UTC</div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PERMIT PROCESS -->
+<div class="section">
+    <div class="section-label">Permit Process</div>
+    <div class="section-title">Four gates. Every one required.</div>
+
+    <div class="permit-flow">
+        <div class="pf-step">
+            <div class="pf-num">1</div>
+            <div class="pf-name">Draft</div>
+            <div class="pf-desc">Operator fills out flight sheet. Domain, judges, hardware, settings, estimates.</div>
+        </div>
+        <div class="pf-step">
+            <div class="pf-num">2</div>
+            <div class="pf-name">Review</div>
+            <div class="pf-desc">Reviewer inspects every field. Judges verified as base. Settings validated. Hardware confirmed.</div>
+        </div>
+        <div class="pf-step">
+            <div class="pf-num">3</div>
+            <div class="pf-name">Freeze</div>
+            <div class="pf-desc">All settings locked. SHA256 hash of the flight sheet computed. No changes after freeze.</div>
+        </div>
+        <div class="pf-step">
+            <div class="pf-num">4</div>
+            <div class="pf-name">Execute</div>
+            <div class="pf-desc">Tribunal runs under permit. Permit ID stamped on every deed. Auditable forever.</div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- WHAT GETS FROZEN -->
+<div class="section">
+    <div class="section-label">Frozen at Permit</div>
+    <div class="section-title">Once approved, nothing changes.</div>
+    <div class="section-desc">Every parameter is locked at permit issuance. The flight sheet hash proves settings weren't altered between approval and execution.</div>
+
+    <div class="frozen-grid">
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Judge Models</div><div class="frozen-desc">Which base models, which versions. Can't swap judges mid-run.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Temperature</div><div class="frozen-desc">Scoring temperature frozen. Affects output determinism.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Max Tokens</div><div class="frozen-desc">Response length cap frozen. Prevents score truncation.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Scoring Prompt</div><div class="frozen-desc">Exact prompt text hashed. Same prompt, same evaluation criteria.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Drift Threshold</div><div class="frozen-desc">Maximum allowed drift between passes. Controls quality gate.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Classification</div><div class="frozen-desc">Tier boundaries frozen. RJ/Honey/Propolis thresholds immutable.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Hardware</div><div class="frozen-desc">Which GPUs, which nodes. Silicon assignment frozen.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Batch Size</div><div class="frozen-desc">How many pairs per scoring cycle. Affects throughput timing.</div></div>
+        <div class="frozen-card"><div class="frozen-icon">LOCKED</div><div class="frozen-name">Power Caps</div><div class="frozen-desc">GPU wattage limits frozen. Affects thermal and timing.</div></div>
+    </div>
+
+    <div class="violation-box">
+        <div class="violation-title">PERMIT VIOLATIONS — AUTO REJECTION</div>
+        <div class="violation-item">Running tribunal without an approved permit → all deeds VOID</div>
+        <div class="violation-item">Changing settings after freeze → permit REVOKED, run terminated</div>
+        <div class="violation-item">Using fine-tuned model as judge → permit DENIED at review</div>
+        <div class="violation-item">Single judge instead of dual → permit DENIED</div>
+        <div class="violation-item">Skipping 2-pass validation → permit DENIED</div>
+        <div class="violation-item">Drift threshold above 0.20 → permit DENIED</div>
+        <div class="violation-item">Flight sheet hash mismatch at execution → run HALTED, audit triggered</div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- TRACEABILITY -->
+<div class="section">
+    <div class="section-label">Traceability</div>
+    <div class="section-title">Every deed traces to its permit.</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--dim);line-height:2.4;background:var(--card);border:1px solid var(--border);padding:24px">
+        <div><span style="color:var(--accent)">DEED</span> SB-2026-0403-00847</div>
+        <div>&nbsp;&nbsp;↓ issued under</div>
+        <div><span style="color:var(--accent)">PERMIT</span> PRM-2026-0403-001</div>
+        <div>&nbsp;&nbsp;↓ specifies</div>
+        <div><span style="color:var(--green)">JUDGES</span> gemma3:12b (base) + qwen2.5:7b (base)</div>
+        <div>&nbsp;&nbsp;↓ on</div>
+        <div><span style="color:var(--blue)">HARDWARE</span> swarmrails-gpu1 + whale-gpu0</div>
+        <div>&nbsp;&nbsp;↓ with</div>
+        <div><span style="color:var(--green)">SETTINGS</span> temp=0.1, max_tokens=200, drift≤0.15 (FROZEN)</div>
+        <div>&nbsp;&nbsp;↓ verified by</div>
+        <div><span style="color:var(--accent)">SWARMTITLE</span> permit on file, settings match, judges base</div>
+        <div>&nbsp;&nbsp;↓ anchored to</div>
+        <div><span style="color:var(--accent)">HEDERA</span> 0.0.10291838 — PERMANENT</div>
+    </div>
+</div>
+
+<div class="footer">
+    SWARMBUILDER — PERMIT OFFICE<br>
+    A division of Swarm & Bee LLC<br><br>
+    <a href="https://swarmtitle.eth.limo">SwarmTitle</a> &nbsp;·&nbsp;
+    <a href="https://swarmshop.eth.limo">SwarmShop</a> &nbsp;·&nbsp;
+    <a href="https://swarmdeed.eth.limo">SwarmDeed</a> &nbsp;·&nbsp;
+    <a href="https://swarmandbee.ai">swarmandbee.ai</a>
+</div>
+
+</body>
+</html>
