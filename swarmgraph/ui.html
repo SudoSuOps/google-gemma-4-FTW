@@ -189,15 +189,39 @@ let simulation = null;
 let selectedNode = null;
 
 async function loadGraph() {
+    // Try live API first, fall back to demo data
     try {
-        const resp = await fetch('/swarmgraph_demo.json');
-        graphData = await resp.json();
+        const resp = await fetch('https://swarmandbee.ai/ops/graph');
+        const data = await resp.json();
+        if (data.live && data.nodes && data.nodes.length > 0) {
+            graphData = data;
+            document.querySelector('.cook-status').textContent = 'LIVE DATA';
+        } else {
+            throw new Error('No live data');
+        }
     } catch(e) {
-        // Embedded fallback
-        graphData = DEMO_DATA;
+        try {
+            const resp = await fetch('/swarmgraph_demo.json');
+            graphData = await resp.json();
+            document.querySelector('.cook-status').textContent = 'DEMO DATA';
+        } catch(e2) {
+            graphData = {summary:{total_nodes:0,total_edges:0,node_types:{},tier_distribution:{}},nodes:[],edges:[]};
+        }
     }
     initDashboard();
     initGraph();
+
+    // Auto-refresh every 30 seconds
+    setInterval(async () => {
+        try {
+            const resp = await fetch('https://swarmandbee.ai/ops/graph');
+            const data = await resp.json();
+            if (data.live && data.nodes) {
+                graphData = data;
+                initDashboard();
+            }
+        } catch(e) {}
+    }, 30000);
 }
 
 // ─── COLORS ───
