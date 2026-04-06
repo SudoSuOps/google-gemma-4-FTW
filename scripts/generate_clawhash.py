@@ -236,18 +236,55 @@ def call_claude(prompt: str, api_key: str) -> str | None:
     return None
 
 
+def call_ollama_redteam(prompt: str) -> str | None:
+    """Call Qwen via ollama to generate an attack prompt (local red-team fallback)."""
+    # /no_think disables Qwen 3.5 reasoning blocks — 3-5x faster, no quality loss
+    # for attack generation (we want creative output, not chain-of-thought)
+    payload = json.dumps({
+        "model": OLLAMA_MODEL,
+        "stream": False,
+        "options": {"temperature": 0.9},
+        "messages": [
+            {"role": "system", "content": RED_TEAM_SYSTEM},
+            {"role": "user", "content": "/no_think\n" + prompt},
+        ],
+    }).encode("utf-8")
+
+    url = f"{OLLAMA_URL}/api/chat"
+    req = urllib.request.Request(
+        url, data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+            content = body.get("message", {}).get("content", "").strip()
+            if content.startswith("<think>"):
+                think_end = content.find("</think>")
+                if think_end != -1:
+                    content = content[think_end + len("</think>"):].strip()
+            return content if content else None
+    except (urllib.error.HTTPError, urllib.error.URLError, OSError, json.JSONDecodeError) as e:
+        print(f"  Ollama red-team error: {e}", file=sys.stderr)
+    return None
+
+
 def call_ollama(attack_prompt: str, persona_system: str) -> str | None:
     """Call Qwen via ollama to generate a defense response."""
     # Combine persona system prompt with blue-team defense protocol
     full_system = f"{persona_system}\n\n{BLUE_TEAM_SYSTEM}"
 
+    # /no_think disables Qwen 3.5 reasoning blocks — faster inference,
+    # defense quality comes from the system prompt structure, not CoT
     payload = json.dumps({
         "model": OLLAMA_MODEL,
         "stream": False,
         "options": {"temperature": OLLAMA_TEMPERATURE},
         "messages": [
             {"role": "system", "content": full_system},
-            {"role": "user", "content": attack_prompt},
+            {"role": "user", "content": "/no_think\n" + attack_prompt},
         ],
     }).encode("utf-8")
 
@@ -340,14 +377,15 @@ def generate_pair(
             f"detail=DRY RUN — template {template['id']}"
         )
     else:
-        # Step 1: Claude generates the attack prompt
+        # Step 1: Generate the attack prompt (Claude API or local Qwen fallback)
         red_team_prompt = build_red_team_prompt(template, variant_index)
-        attack_prompt = call_claude(red_team_prompt, api_key)
+        if api_key:
+            attack_prompt = call_claude(red_team_prompt, api_key)
+            time.sleep(0.5)  # Rate limit between Claude calls
+        else:
+            attack_prompt = call_ollama_redteam(red_team_prompt)
         if not attack_prompt:
             return None
-
-        # Rate limit between Claude calls
-        time.sleep(0.5)
 
         # Step 2: Qwen generates the defense response
         defense_response = call_ollama(attack_prompt, persona_system)
@@ -370,6 +408,12 @@ def generate_pair(
     # Rough token estimate: chars / 4
     token_count = char_count // 4
 
+    # Prompt hash: template + persona = the genome DNA for this pair
+    # Traceable through deeds, same as prompt_hash in other domains
+    prompt_hash = hashlib.sha256(
+        f"{template['id']}:{persona_key}:{persona_system}".encode()
+    ).hexdigest()[:16]
+
     pair = {
         "id": str(uuid.uuid4()),
         "fingerprint": fp,
@@ -387,8 +431,8 @@ def generate_pair(
             "expected_behavior": template.get("expected_behavior", ""),
             "variant_index": variant_index,
             "generator": "generate_clawhash.py",
-            "claude_model": CLAUDE_MODEL,
             "defense_model": OLLAMA_MODEL,
+            "prompt_hash": prompt_hash,
         },
         "source_file": template.get("_source_file", ""),
     }
@@ -490,12 +534,8 @@ def main():
     output_path = Path(args.output) if args.output else DEFAULT_OUTPUT
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Check API key (not needed for dry-run)
+    # Check API key (not needed for dry-run; falls back to local Qwen for red-team)
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not args.dry_run and not api_key:
-        print("ERROR: ANTHROPIC_API_KEY not set. Use --dry-run or set the env var.",
-              file=sys.stderr)
-        sys.exit(1)
 
     # ─── Header ───
     print("=" * 60)
@@ -507,7 +547,10 @@ def main():
     print(f"  Output:         {output_path}")
     print(f"  DB insert:      {'OFF' if args.no_db else 'ON'}")
     if not args.dry_run:
-        print(f"  Red team:       {CLAUDE_MODEL} (temp {CLAUDE_TEMPERATURE})")
+        if api_key:
+            print(f"  Red team:       {CLAUDE_MODEL} (temp {CLAUDE_TEMPERATURE})")
+        else:
+            print(f"  Red team:       {OLLAMA_MODEL} LOCAL (temp 0.9) — no ANTHROPIC_API_KEY")
         print(f"  Blue team:      {OLLAMA_MODEL} (temp {OLLAMA_TEMPERATURE})")
     print()
 
