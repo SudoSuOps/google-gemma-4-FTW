@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Buy AI training data by the pound. Class A Royal Jelly weight, dual-scale certified, blockchain-anchored. Price per pound.">
+<meta property="og:title" content="Swarm & Bee — Weight Shop | Intelligence by the Pound">
+<meta property="og:image" content="/cards/og-shop.png">
+<title>Weight Shop — Intelligence by the Pound | Swarm & Bee</title>
+<style>
+:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono','Fira Code',monospace}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--mono);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{position:fixed;top:0;width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.nav-logo{font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700;text-decoration:none}.nav-links{display:flex;gap:12px;font-size:9px}.nav-links a{color:var(--dim);text-decoration:none}.nav-links a:hover{color:var(--text)}.nav-links a.active{color:var(--accent)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.main{max-width:780px;margin:0 auto;padding:64px 20px 40px}
+.hero{text-align:center;padding:30px 0 16px}.hero h1{font-size:22px;color:var(--accent);letter-spacing:4px;font-weight:300;margin-bottom:6px}.hero .sub{font-size:10px;color:var(--dim);line-height:1.6}
+.scale{background:var(--card);border:1px solid var(--border);padding:20px;margin:16px 0}
+.scale-title{font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:14px}
+.row{display:flex;gap:10px;margin-bottom:10px;align-items:center}.row-l{font-size:10px;color:var(--dim);width:70px;flex-shrink:0}
+.sel{flex:1;background:rgba(20,20,32,0.8);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:8px 10px;outline:none}
+.inp{flex:1;background:rgba(20,20,32,0.8);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:14px;padding:8px 10px;outline:none;text-align:right}
+.sel:focus,.inp:focus{border-color:var(--accent)}
+.sel option{background:var(--card);color:var(--text)}
+hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.res-i{background:rgba(20,20,32,0.5);padding:10px;text-align:center}.res-i .v{font-size:18px;color:var(--accent);font-weight:700}.res-i .l{font-size:7px;color:var(--dim);letter-spacing:2px;margin-top:3px}
+.total{text-align:center;padding:14px;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);margin:14px 0}.total .price{font-size:30px;color:var(--accent);font-weight:700}.total .unit{font-size:9px;color:var(--dim);margin-top:4px}
+.btn{width:100%;background:rgba(212,160,23,0.15);border:1px solid var(--accent);color:var(--accent);font-family:var(--mono);font-size:11px;padding:11px;cursor:pointer;letter-spacing:2px;transition:all 0.2s}.btn:hover{background:rgba(212,160,23,0.3)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.warn{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);padding:10px 14px;margin:12px 0;font-size:9px;line-height:1.6;display:none}.warn-t{color:var(--red);font-weight:700;font-size:8px;letter-spacing:2px;margin-bottom:3px}
+.board{background:var(--card);border:1px solid var(--border);padding:16px;margin:16px 0}
+.pr{display:grid;grid-template-columns:95px 65px 50px 1fr;gap:6px;font-size:10px;padding:5px 0;border-bottom:1px solid rgba(20,20,32,0.5);align-items:center}
+.pr.hd{color:var(--dim);font-size:8px;letter-spacing:1px;border-bottom:1px solid var(--border)}
+.pr .d{color:var(--accent);font-weight:700}
+.pr .emergency{color:var(--red);font-weight:700}
+.sb{height:4px;background:var(--border);border-radius:2px;overflow:hidden}.sf{height:100%;border-radius:2px}
+.guide{background:var(--card);border:1px solid var(--border);padding:16px;margin:16px 0}
+.guide-title{font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:10px}
+.gr{display:grid;grid-template-columns:80px 1fr 70px;gap:6px;font-size:10px;padding:5px 0;border-bottom:1px solid rgba(20,20,32,0.5)}
+.email-row{display:flex;gap:8px;margin:12px 0}.email-inp{flex:1;background:rgba(20,20,32,0.8);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:8px 10px;outline:none}.email-inp:focus{border-color:var(--accent)}
+.status-msg{text-align:center;font-size:10px;margin:8px 0;display:none}
+.ft{text-align:center;padding:20px 0;font-size:8px;color:var(--dim);border-top:1px solid var(--border);margin-top:20px;line-height:1.8}.ft a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){.row{flex-direction:column;gap:4px}.row-l{width:auto}.res{grid-template-columns:1fr}.pr{grid-template-columns:80px 55px 1fr}.email-row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="nav">
+    <a href="/" class="nav-logo"><span class="live-dot"></span>SWARM & BEE</a>
+    <div class="nav-links">
+        <a href="/deed/">Deeds</a>
+        <a href="/chain/">Mining</a>
+        <a href="/shop/" class="active">Shop</a>
+        <a href="/cookbook/">Cookbook</a>
+        <a href="/writer/">Writer</a>
+        <a href="/graph/">Graph</a>
+    </div>
+</div>
+<div class="main">
+<div class="hero"><h1>WEIGHT SHOP</h1><div class="sub">Intelligence by the pound. Dual-scale certified. Blockchain-anchored.<br>Buy what you need. Don't overbuy. Come back when you need more.</div></div>
+
+<div class="scale">
+<div class="scale-title">PUT IT ON THE SCALE</div>
+<div class="row"><span class="row-l">Domain</span><select class="sel" id="d" onchange="calc()">
+    <option value="legal" selected>LegalHash — Legal ($0.0022/lb)</option>
+    <option value="grants">GrantHash — Grants ($0.0061/lb)</option>
+    <option value="medical">MedHash — Medical ($0.0072/lb)</option>
+    <option value="aviation">AvionHash — Aviation ($0.0075/lb)</option>
+    <option value="agenthash">AgentHash — Agents ($0.016/lb)</option>
+    <option value="cre">CREHash — CRE ($0.029/lb)</option>
+    <option value="clawhash">ClawHash — Security ($0.048/lb)</option>
+</select></div>
+<div class="row"><span class="row-l">Pounds</span><input class="inp" id="p" type="number" value="5000" min="100" step="100" oninput="calc()"></div>
+<hr>
+<div class="res">
+<div class="res-i"><div class="v" id="o-ppl">$1.99</div><div class="l">PRICE / LB</div></div>
+<div class="res-i"><div class="v" id="o-lbs">5,000</div><div class="l">LBS ON SCALE</div></div>
+<div class="res-i"><div class="v" id="o-move">+20%</div><div class="l">EXPECTED MOVE</div></div>
+<div class="res-i"><div class="v" id="o-certs">5,000</div><div class="l">WEIGHT CERTS</div></div>
+</div>
+<div class="total"><div class="price" id="o-total">$9,950</div><div class="unit">Every pound weighed on dual scale. Every deed anchored to blockchain.</div></div>
+<div class="warn" id="w"><div class="warn-t">DON'T OVERBUY</div><span id="wm"></span></div>
+<div class="email-row">
+    <input class="email-inp" id="email" type="email" placeholder="your@email.com">
+    <button class="btn" style="width:auto;padding:8px 20px" onclick="checkout()" id="checkout-btn">CHECKOUT</button>
+</div>
+<div class="status-msg" id="status"></div>
+</div>
+
+<div class="board">
+<div class="scale-title">PRICE BOARD — CLASS A (ROYAL JELLY) BY DOMAIN</div>
+<div class="pr hd"><span>DOMAIN</span><span>$/LB</span><span>DIFF</span><span>IN STOCK</span></div>
+<div id="pb"></div>
+</div>
+
+<div class="guide">
+<div class="guide-title">HOW MANY POUNDS DO I NEED?</div>
+<div class="gr"><span style="color:var(--dim)">1,000 lbs</span><span>Taste the domain. Does it work for me? +5%</span><span style="color:var(--dim)">test</span></div>
+<div class="gr"><span style="color:var(--accent)">5,000 lbs</span><span>Specialist. Real expertise. +20%. THE SWEET SPOT.</span><span style="color:var(--accent)">buy this</span></div>
+<div class="gr"><span>15,000 lbs</span><span>Board-certified. Deep domain expert. +28%.</span><span>premium</span></div>
+<div class="gr"><span style="color:var(--red)">30,000+</span><span>Diminishing returns. Don't overbuy. Come back next week.</span><span style="color:var(--red)">waste</span></div>
+<div class="warn" style="display:block;margin-top:10px"><div class="warn-t">SHELF LIFE</div>Like grapes — buy 10 lbs, eat 1 lb/day, 5 day shelf life = 5 lbs wasted. Models absorb ~5,000 lbs effectively per cook. Buy 5,000, cook it, measure the move. Come back for fresh weight. Virgin jelly beats stale weight.</div>
+</div>
+
+<div class="guide">
+<div class="guide-title">EVERY POUND INCLUDES</div>
+<div class="gr"><span style="color:var(--green)">Weighed</span><span>Dual-scale consensus (two independent models, separate hardware)</span><span></span></div>
+<div class="gr"><span style="color:var(--green)">5 coords</span><span>accuracy, completeness, specificity, structure, domain_expertise</span><span></span></div>
+<div class="gr"><span style="color:var(--green)">Deeded</span><span>Weight certificate with deed ID (SB-2026-MMDD-NNNNN)</span><span></span></div>
+<div class="gr"><span style="color:var(--green)">Sealed</span><span>Merkle tree (SHA-256, batches of 50 deeds)</span><span></span></div>
+<div class="gr"><span style="color:var(--green)">Anchored</span><span>Hedera HCS topic 0.0.10291838 (immutable)</span><span></span></div>
+<div class="gr"><span style="color:var(--green)">Verifiable</span><span>Search any deed at swarmandbee.ai/deed/</span><span></span></div>
+</div>
+
+<div class="ft"><a href="/">SWARM & BEE</a> &middot; <a href="/deed/">Deeds</a> &middot; <a href="/chain/">Mining</a> &middot; <a href="/cookbook/">Cookbook</a> &middot; <a href="/writer/">Writer</a><br>Oil by the barrel. Gold by the ounce. Intelligence by the pound.<br>Weigh the data. Feed the machine. Prove the weight.</div>
+</div>
+
+<script>
+// 20x cost to mint (500W fleet, $0.15/kWh, real RJ/hr throughput)
+const P={
+    legal:     {price:0.0022, d:1.9,  n:'LegalHash',  tag:''},
+    grants:    {price:0.0061, d:1.8,  n:'GrantHash',  tag:''},
+    medical:   {price:0.0072, d:14.7, n:'MedHash',    tag:''},
+    aviation:  {price:0.0075, d:0,    n:'AvionHash',  tag:''},
+    agenthash: {price:0.016,  d:0,    n:'AgentHash',  tag:'NEW'},
+    cre:       {price:0.029,  d:53.9, n:'CREHash',    tag:''},
+    clawhash:  {price:0.048,  d:0,    n:'ClawHash',   tag:'EMERGENCY'},
+};
+
+function mv(l){
+    if(l>=30000) return '+31%';
+    if(l>=15000) return '+28%';
+    if(l>=5000)  return '+20%';
+    if(l>=2000)  return '+12%';
+    if(l>=1000)  return '+5%';
+    return '+2%';
+}
+
+function calc(){
+    const d=document.getElementById('d').value;
+    const l=parseInt(document.getElementById('p').value)||0;
+    const pp=P[d].price;
+    const t=pp*l;
+    document.getElementById('o-ppl').textContent='$'+pp.toFixed(4);
+    document.getElementById('o-lbs').textContent=l.toLocaleString();
+    document.getElementById('o-move').textContent=mv(l);
+    document.getElementById('o-certs').textContent=l.toLocaleString();
+    document.getElementById('o-total').textContent='$'+t.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const w=document.getElementById('w'),wm=document.getElementById('wm');
+    if(l>15000){
+        w.style.display='block';
+        wm.textContent='You are buying '+l.toLocaleString()+' lbs. Models absorb ~5,000 lbs effectively per cook. The first 5,000 gives +20%. The next 10,000 gives +8%. Buy less, cook it, measure, come back. Fresh weight > stale weight.';
+    } else {
+        w.style.display='none';
+    }
+}
+
+async function checkout(){
+    const d=document.getElementById('d').value;
+    const l=parseInt(document.getElementById('p').value)||0;
+    const email=document.getElementById('email').value.trim();
+    const btn=document.getElementById('checkout-btn');
+    const status=document.getElementById('status');
+
+    if(!email || !email.includes('@')){
+        status.style.display='block';
+        status.style.color='var(--red)';
+        status.textContent='Enter your email to proceed.';
+        document.getElementById('email').focus();
+        return;
+    }
+    if(l<100){
+        status.style.display='block';
+        status.style.color='var(--red)';
+        status.textContent='Minimum order: 100 lbs.';
+        return;
+    }
+
+    btn.disabled=true;
+    btn.textContent='WEIGHING...';
+    status.style.display='block';
+    status.style.color='var(--dim)';
+    status.textContent='Creating checkout session...';
+
+    try{
+        const r=await fetch('/shop/api/checkout',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({domain:d,pounds:l,email:email})
+        });
+        const data=await r.json();
+        if(data.checkout_url){
+            status.style.color='var(--green)';
+            status.textContent='Redirecting to Stripe...';
+            window.location.href=data.checkout_url;
+        } else if(data.contact){
+            status.style.color='var(--accent)';
+            status.textContent=data.error+' — Contact: '+data.contact;
+            btn.disabled=false;
+            btn.textContent='CHECKOUT';
+        } else {
+            throw new Error(data.error||'Checkout failed');
+        }
+    }catch(e){
+        status.style.color='var(--red)';
+        status.textContent='Error: '+e.message+' — Email build@swarmandbee.ai';
+        btn.disabled=false;
+        btn.textContent='CHECKOUT';
+    }
+}
+
+async function loadBoard(){
+    const b=document.getElementById('pb');
+    try{
+        const s=await fetch('/deed/api/stats').then(r=>r.json());
+        const doms=s.domains||{};
+        const mx=Math.max(...Object.values(doms),1);
+        for(const[d,cfg]of Object.entries(P)){
+            const st=doms[d]||0;
+            const pct=Math.round(st/mx*100);
+            const col=st>5000?'var(--green)':st>1000?'var(--accent)':'var(--dim)';
+            const cls=cfg.tag==='EMERGENCY'?'emergency':'d';
+            const tagHtml=cfg.tag?` <span style="font-size:7px;color:${cfg.tag==='EMERGENCY'?'var(--red)':'var(--green)'};letter-spacing:1px">${cfg.tag}</span>`:'';
+            b.innerHTML+=`<div class="pr">
+                <span class="${cls}">${cfg.n}${tagHtml}</span>
+                <span style="color:var(--accent)">$${cfg.price.toFixed(4)}</span>
+                <span style="color:var(--dim)">${cfg.d||'—'}</span>
+                <span><div class="sb"><div class="sf" style="width:${pct}%;background:${col}"></div></div><span style="font-size:7px;color:var(--dim)">${st.toLocaleString()} lbs</span></span>
+            </div>`;
+        }
+    }catch(e){
+        b.innerHTML='<div style="font-size:9px;color:var(--dim)">Loading inventory...</div>';
+    }
+}
+
+// Check URL params for Stripe return
+const params=new URLSearchParams(window.location.search);
+if(params.get('status')==='success'){
+    document.querySelector('.hero .sub').innerHTML='<span style="color:var(--green)">Order confirmed! Check your email for download link.</span><br>Intelligence by the pound. Dual-scale certified. Blockchain-anchored.';
+}
+
+calc();
+loadBoard();
+</script>
+</body>
+</html>

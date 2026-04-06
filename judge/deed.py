@@ -15,7 +15,7 @@ import hashlib
 from pathlib import Path
 
 
-def generate_deed(scored_pair, domain, hardware="unknown", node="unknown", strategy="tribunal_dual_judge"):
+def generate_deed(scored_pair, domain, hardware="unknown", node="unknown", strategy="tribunal_dual_scale"):
     """Generate a formal title deed from a tribunal-scored pair."""
 
     tribunal = scored_pair.get("tribunal", {})
@@ -38,11 +38,11 @@ def generate_deed(scored_pair, domain, hardware="unknown", node="unknown", strat
             "strategy": strategy,
         },
 
-        # Proof 02: Quality
+        # Proof 02: Quality (weight)
         "quality": {
-            "judge_a": tribunal["judge_a"],
-            "judge_b": tribunal["judge_b"],
-            "final_score": tribunal["final_score"],
+            "scale_a": tribunal.get("scale_a", tribunal.get("judge_a")),
+            "scale_b": tribunal.get("scale_b", tribunal.get("judge_b")),
+            "final_weight": tribunal.get("final_weight", tribunal.get("final_score")),
         },
 
         # Proof 03: Process
