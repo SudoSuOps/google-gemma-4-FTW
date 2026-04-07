@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmDeed — County Recorder's Office</title>
+<style>
+:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono','Fira Code',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{position:fixed;top:0;width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.nav-logo{font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700}
+.nav-stats{display:flex;gap:20px;font-size:10px}
+.nav-stats .v{color:var(--text);font-weight:600}
+.nav-stats .l{color:var(--dim);margin-left:3px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.main{max-width:960px;margin:0 auto;padding:64px 20px 40px}
+.terminal{background:var(--card);border:1px solid var(--border)}
+.terminal-bar{background:rgba(20,20,32,0.8);border-bottom:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.terminal-title{font-size:9px;color:var(--dim);margin-left:8px;letter-spacing:2px}
+.terminal-body{padding:16px;min-height:300px;max-height:75vh;overflow-y:auto;font-size:12px;line-height:1.8}
+.terminal-body .line{white-space:pre-wrap;word-break:break-all}
+.prompt{color:var(--accent)}.cmd{color:var(--green)}.err{color:var(--red)}.info{color:var(--blue)}.dim{color:var(--dim)}
+.rj{color:var(--accent);font-weight:700}.ho{color:#a88a14}.pr{color:var(--dim)}.green{color:var(--green)}
+.input-row{display:flex;align-items:center;border-top:1px solid var(--border);padding:10px 16px;gap:8px}
+.input-prompt{color:var(--accent);font-size:12px;flex-shrink:0}
+.input-box{flex:1;background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:12px;outline:none}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.quick a{font-size:10px;color:var(--accent);border:1px solid var(--border);padding:4px 10px;text-decoration:none;cursor:pointer}
+.quick a:hover{border-color:var(--accent);background:rgba(212,160,23,0.1)}
+@media(max-width:600px){.nav-stats{display:none}.main{padding:56px 10px 20px}.terminal-body{font-size:11px;max-height:60vh}}
+</style>
+</head>
+<body>
+<div class="nav">
+    <div class="nav-logo"><span class="live-dot"></span>SWARMDEED</div>
+    <div class="nav-stats" id="nav-stats"></div>
+</div>
+<div class="main">
+    <div class="quick">
+        <a onclick="exec('help')">help</a>
+        <a onclick="exec('stats')">stats</a>
+        <a onclick="exec('domains')">domains</a>
+        <a onclick="exec('recent 10')">recent</a>
+        <a onclick="exec('search royal-jelly')">royal jelly</a>
+        <a onclick="exec('batches')">batches</a>
+        <a onclick="exec('finality')">finality</a>
+        <a onclick="exec('top 10')">top 10</a>
+    </div>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="dot" style="background:var(--red)"></div>
+            <div class="dot" style="background:var(--accent)"></div>
+            <div class="dot" style="background:var(--green)"></div>
+            <span class="terminal-title">SWARMDEED COUNTY RECORDER — LIVE TERMINAL</span>
+        </div>
+        <div class="terminal-body" id="output"></div>
+        <div class="input-row">
+            <span class="input-prompt">deed&gt;</span>
+            <input class="input-box" id="input" placeholder="Type a command... (try 'help')" autofocus>
+        </div>
+    </div>
+</div>
+<script>
+const API='/deed/api';
+const $=id=>document.getElementById(id),out=$('output'),inp=$('input');
+function print(h){out.innerHTML+=`<div class="line">${h}</div>`}
+function br(){print('')}
+function scroll(){out.scrollTop=out.scrollHeight}
+function tc(t){t=(t||'').replace('_','-');return t==='royal-jelly'?'rj':t==='honey'?'ho':'pr'}
+function tl(t){t=(t||'').replace('_','-');return t==='royal-jelly'?'ROYAL JELLY':t==='honey'?'HONEY':'PROPOLIS'}
+
+async function api(path){
+    const r=await fetch(API+path);
+    if(!r.ok)throw new Error(`API ${r.status}`);
+    return r.json();
+}
+
+async function cmdStats(){
+    const s=await api('/stats');
+    print('<span class="info">═══ DEED REGISTRY — LIVE ═══</span>');br();
+    print(`  Total deeds:     <span class="rj">${s.total.toLocaleString()}</span>`);
+    print(`  Merkle batches:  ${s.batches}`);
+    print(`  Pending in bin:  ${s.remaining.toLocaleString()}`);
+    print(`  Flagged:         ${s.flagged}`);br();
+    print('  <span class="dim">── TIERS ──</span>');
+    for(const[t,c]of Object.entries(s.tiers||{})){const p=(c/s.total*100).toFixed(1);print(`  <span class="${tc(t)}">${tl(t).padEnd(14)}</span> ${c.toLocaleString().padStart(6)} (${p}%)`)}
+    br();print('  <span class="dim">── SCORES ──</span>');
+    print(`  Average:  ${s.avg_score.toFixed(4)}`);
+    print(`  Highest:  ${s.max_score.toFixed(4)}`);
+    print(`  Lowest:   ${s.min_score.toFixed(4)}`);
+}
+
+async function cmdDomains(){
+    const d=await api('/domains');
+    print('<span class="info">═══ DOMAINS ═══</span>');br();
+    for(const x of d.domains)
+        print(`  <span class="cmd">${x.domain.padEnd(15)}</span> ${String(x.total).padStart(5)} deeds  |  <span class="rj">RJ:${x.royal_jelly}</span>  <span class="ho">H:${x.honey}</span>  <span class="pr">P:${x.propolis}</span>  avg:${x.avg_score.toFixed(3)}`);
+}
+
+async function cmdRecent(n){
+    n=parseInt(n)||10;
+    const d=await api(`/deeds?limit=${n}&offset=0`);
+    print(`<span class="info">═══ LAST ${n} DEEDS (of ${d.total.toLocaleString()}) ═══</span>`);br();
+    for(const x of d.deeds)deedLine(x);
+}
+
+async function cmdDeed(id){
+    if(!id){print('<span class="err">Usage: deed &lt;deed_id&gt;</span>');return}
+    try{
+        const d=await api(`/deed/${id}`);
+        const c=tc(d.tier);
+        print(`<span class="info">═══ DEED: ${d.id} ═══</span>`);br();
+        print(`  ID:            <span class="${c}">${d.id}</span>`);
+        print(`  Domain:        ${d.domain_id}`);
+        print(`  Tier:          <span class="${c}">${tl(d.tier)}</span>`);
+        print(`  Final Score:   <span class="${c}">${(d.final_score||0).toFixed(4)}</span>`);
+        print(`  Fingerprint:   ${d.fingerprint||'—'}`);
+        print(`  Pair Size:     ${d.char_count?d.char_count.toLocaleString()+' chars':'—'}`);
+        print(`  Sealed:        ${(d.sealed_at||'').replace('T',' ').slice(0,19)}`);
+        print(`  Validated:     ${d.validated?'<span class="green">YES</span>':'<span class="err">NO</span>'}`);
+        br();print('  <span class="dim">── DUAL JUDGE SCORES ──</span>');
+        print(`  Judge A:       ${d.judge_a_id} → <span class="${c}">${(d.judge_a_score||0).toFixed(4)}</span>`);
+        if(d.judge_a_reasoning)print(`                 <span class="dim">${d.judge_a_reasoning.slice(0,200)}</span>`);
+        print(`  Judge B:       ${d.judge_b_id} → <span class="${c}">${(d.judge_b_score||0).toFixed(4)}</span>`);
+        if(d.judge_b_reasoning)print(`                 <span class="dim">${d.judge_b_reasoning.slice(0,200)}</span>`);
+        print(`  Max Drift:     ${d.max_drift!=null?(d.max_drift).toFixed(4):'—'}`);
+        br();print('  <span class="dim">── PAIR PREVIEW ──</span>');
+        if(d.system_preview)print(`  [system]       <span class="dim">${d.system_preview.slice(0,120)}</span>`);
+        if(d.user_preview)print(`  [user]         ${d.user_preview.slice(0,250)}`);
+        if(d.assistant_preview)print(`  [assistant]    ${d.assistant_preview.slice(0,250)}`);
+        br();print('  <span class="dim">── FIVE PROOFS ──</span>');
+        const proofs=[
+            [!!d.domain_id,'01 Origin',d.domain_id],
+            [d.judge_a_score!=null,'02 Quality',`A:${(d.judge_a_score||0).toFixed(2)} B:${(d.judge_b_score||0).toFixed(2)} → ${(d.final_score||0).toFixed(2)}`],
+            [!!d.sealed_at,'03 Process','sealed'],
+            [false,'04 Economics','pending'],
+            [!!d.merkle_root,'05 Trust',d.merkle_root?(d.merkle_root).slice(0,24)+'...':'no batch'],
+        ];
+        for(const[ok,name,detail]of proofs)print(`  ${ok?'<span class="green">■</span>':'<span class="dim">□</span>'} ${name.padEnd(15)} ${detail}`);
+        if(d.batch_id){br();print(`  Batch:         ${d.batch_id}`);print(`  Merkle Root:   ${(d.merkle_root||'').slice(0,40)}...`);print(`  Leaf Index:    ${d.merkle_leaf_idx}`)}
+    }catch(e){print(`<span class="err">${e.message}</span>`)}
+}
+
+async function cmdSearch(q){
+    if(!q){print('<span class="err">Usage: search &lt;query&gt;</span>');return}
+    const d=await api(`/deeds?q=${encodeURIComponent(q)}&limit=25`);
+    print(`<span class="info">═══ SEARCH: "${q}" — ${d.total} results ═══</span>`);br();
+    for(const x of d.deeds)deedLine(x);
+    if(d.total>25)print(`<span class="dim">  ... ${d.total-25} more</span>`);
+}
+
+async function cmdTier(t){
+    if(!t){print('<span class="err">Usage: tier &lt;royal-jelly|honey|propolis&gt;</span>');return}
+    const d=await api(`/deeds?tier=${encodeURIComponent(t)}&limit=20`);
+    print(`<span class="info">═══ ${tl(t)} — ${d.total} deeds ═══</span>`);br();
+    for(const x of d.deeds)deedLine(x);
+    if(d.total>20)print(`<span class="dim">  ... ${d.total-20} more</span>`);
+}
+
+async function cmdBatches(){
+    const d=await api('/batches');
+    print(`<span class="info">═══ MERKLE BATCHES — ${d.total} ═══</span>`);br();
+    for(const b of d.batches)
+        print(`  <span class="cmd">${b.batch_id}</span>  ${String(b.leaf_count).padStart(3)} leaves  root:<span class="dim">${(b.merkle_root||'').slice(0,16)}...</span>  ${b.domain||''}`);
+}
+
+async function cmdFinality(){
+    const f=await api('/finality');
+    print('<span class="info">═══ FINALITY PIPELINE — LIVE ═══</span>');br();
+    const l1=f.l1_postgresql,l2=f.l2_merkle,l4=f.l4_hedera,p=f.pipeline;
+    print(`  ${l1.status==='active'?'<span class="green">■</span>':'<span class="dim">□</span>'} L1 PostgreSQL    ${l1.deeds.toLocaleString()} deeds filed`);
+    print(`  ${l2.status==='active'?'<span class="green">■</span>':'<span class="dim">□</span>'} L2 Merkle         ${l2.batches} batches`);
+    print(`  <span class="dim">□</span> L3 IPFS           not yet wired`);
+    print(`  ${l4.status==='active'?'<span class="green">■</span>':'<span class="dim">□</span>'} L4 Hedera         topic: ${l4.topic}`);
+    print(`  <span class="green">■</span> L5 ENS            swarmdeed.eth`);
+    br();
+    const bar='█'.repeat(Math.round(p.pct/5))+'░'.repeat(20-Math.round(p.pct/5));
+    print(`  Filing: [${bar}] ${p.pct}%`);
+    print(`  <span class="dim">${p.remaining.toLocaleString()} pairs still in tribunal queue</span>`);
+}
+
+async function cmdTop(n){n=parseInt(n)||10;const d=await api(`/deeds?limit=${n}&offset=0`);print(`<span class="info">═══ RECENT ${n} ═══</span>`);br();for(const x of d.deeds)deedLine(x)}
+
+function cmdHelp(){
+print('<span class="info">SwarmDeed County Recorder — Live Terminal</span>');br();
+print('  <span class="cmd">stats</span>              Live overview: totals, tiers, scores');
+print('  <span class="cmd">domains</span>            All domains with tier breakdown');
+print('  <span class="cmd">recent [n]</span>         Last N deeds (default 10)');
+print('  <span class="cmd">search &lt;query&gt;</span>     Search by ID, domain, tier, or pair text');
+print('  <span class="cmd">deed &lt;id&gt;</span>         Full deed record with all 5 proofs');
+print('  <span class="cmd">batches</span>            Merkle batch list');
+print('  <span class="cmd">tier &lt;name&gt;</span>       Filter: royal-jelly, honey, propolis');
+print('  <span class="cmd">finality</span>           5-layer pipeline status — live');
+print('  <span class="cmd">top [n]</span>            Most recent N deeds');
+print('  <span class="cmd">clear</span>              Clear terminal');
+br();print('  <span class="dim">All data is LIVE from PostgreSQL. No cache. No snapshots.</span>');
+}
+
+function deedLine(d){
+    const s=(d.final_score||0).toFixed(3),c=tc(d.tier),t=(d.sealed_at||'').replace('T',' ').slice(0,19),b=d.batch_id?'✓':'·';
+    print(`  <span class="${c}">${(d.deed_id||d.id||'').padEnd(22)}</span> <span class="${c}">${s}</span>  ${(d.domain||d.domain_id||'').padEnd(10)} ${b}  <span class="dim">${t}</span>`);
+}
+
+async function exec(raw){
+    const p=raw.trim().split(/\s+/),cmd=p[0].toLowerCase(),arg=p.slice(1).join(' ');
+    print(`<span class="prompt">deed&gt;</span> <span class="cmd">${raw}</span>`);br();
+    try{
+        switch(cmd){
+            case'help':cmdHelp();break;case'stats':await cmdStats();break;case'domains':await cmdDomains();break;
+            case'recent':await cmdRecent(arg);break;case'deed':await cmdDeed(arg);break;case'search':await cmdSearch(arg);break;
+            case'tier':await cmdTier(arg);break;case'batches':await cmdBatches();break;case'finality':await cmdFinality();break;
+            case'top':await cmdTop(arg);break;case'clear':out.innerHTML='';break;
+            default:print(`<span class="err">Unknown: ${cmd}. Type 'help'.</span>`)}
+    }catch(e){print(`<span class="err">API error: ${e.message}</span>`)}
+    br();scroll();
+}
+
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){exec(inp.value.trim());inp.value=''}});
+
+async function init(){
+    print('<span class="dim">Connecting to deed registry...</span>');
+    try{
+        const s=await api('/stats');
+        out.innerHTML='';
+        $('nav-stats').innerHTML=`<span><span class="v">${s.total.toLocaleString()}</span><span class="l">deeds</span></span><span><span class="v">${s.batches}</span><span class="l">batches</span></span><span><span class="v">${(s.tiers['royal-jelly']||0).toLocaleString()}</span><span class="l">royal jelly</span></span><span><span class="v">${s.remaining.toLocaleString()}</span><span class="l">pending</span></span>`;
+        print('<span class="rj">╔══════════════════════════════════════════════════════╗</span>');
+        print('<span class="rj">║   SWARMDEED — COUNTY RECORDER\'S OFFICE               ║</span>');
+        print('<span class="rj">║   Every deed. Every score. Every proof. LIVE.        ║</span>');
+        print('<span class="rj">╚══════════════════════════════════════════════════════╝</span>');br();
+        print(`  Registry: <span class="rj">${s.total.toLocaleString()}</span> deeds across ${Object.keys(s.domains||{}).length} domains`);
+        print(`  Batches:  ${s.batches} Merkle trees sealed`);
+        print(`  Quality:  ${(s.tiers['royal-jelly']||0).toLocaleString()} Royal Jelly (${((s.tiers['royal-jelly']||0)/s.total*100).toFixed(1)}%)`);
+        print(`  Pending:  ${s.remaining.toLocaleString()} pairs in tribunal`);
+        print(`  <span class="green">■ LIVE</span> — querying PostgreSQL in real time`);br();
+        print('  Type <span class="cmd">help</span> for commands');
+    }catch(e){
+        print(`<span class="err">Cannot connect to API: ${e.message}</span>`);
+        print('<span class="dim">API endpoint: /deed/api/stats</span>');
+    }
+    br();scroll();
+}
+init();
+</script>
+</body>
+</html>

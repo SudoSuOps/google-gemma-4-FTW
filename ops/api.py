@@ -28,7 +28,7 @@ import argparse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+DB_URL = os.environ.get("DATABASE_URL", "")
 
 # ─── DATA COLLECTORS ───
 
@@ -260,7 +260,7 @@ def get_live_graph():
             edges.append({"source": deed_node_id, "target": f"domain:{domain}", "type": "belongs_to"})
             if tier:
                 edges.append({"source": deed_node_id, "target": "judge:gemma3:12b", "type": "scored_by"})
-                edges.append({"source": deed_node_id, "target": "judge:qwen2.5:7b", "type": "scored_by"})
+                edges.append({"source": deed_node_id, "target": "judge:gemma3:12b", "type": "scored_by"})
 
         # Anchor nodes
         cur.execute("SELECT COUNT(*) FROM anchors")

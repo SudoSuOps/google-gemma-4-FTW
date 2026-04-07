@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmGEO — Generative Engine Optimization Scanner</title>
+<meta name="description" content="Free AI visibility scan. See how ChatGPT, Claude, and Gemini see your website. GEO score across 6 dimensions. Fix what's broken.">
+<style>
+:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--orange:#f97316;--mono:'SF Mono','JetBrains Mono','Fira Code',monospace;--sans:'Inter',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{position:fixed;top:0;width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.nav-logo{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;font-family:var(--mono);font-size:10px}
+.nav-links a{color:var(--dim);text-decoration:none}.nav-links a:hover{color:var(--accent)}
+.main{max-width:800px;margin:0 auto;padding:80px 20px 60px}
+h1{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.1;margin-bottom:8px;text-align:center}
+h1 em{font-style:normal;color:var(--accent)}
+.subtitle{text-align:center;color:var(--dim);font-size:14px;margin-bottom:40px;font-family:var(--mono)}
+
+/* SCANNER */
+.scanner{background:var(--card);border:1px solid var(--border);padding:32px;margin-bottom:32px}
+.scan-label{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.scan-row{display:flex;gap:8px}
+.scan-input{flex:1;padding:14px 16px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:14px;outline:none}
+.scan-input:focus{border-color:var(--accent)}
+.scan-btn{padding:14px 28px;background:var(--accent);color:var(--bg);border:none;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer}
+.scan-btn:hover{background:#c49315}
+.scan-btn:disabled{background:var(--dim);cursor:wait}
+.scan-note{font-size:11px;color:var(--dim);margin-top:8px;text-align:center}
+.scanning{font-family:var(--mono);font-size:12px;color:var(--accent);text-align:center;padding:20px}
+
+/* REPORT */
+.report{display:none}
+.report.visible{display:block}
+.grade-banner{text-align:center;padding:32px;border:2px solid;margin-bottom:24px}
+.grade-letter{font-family:var(--mono);font-size:72px;font-weight:800;line-height:1}
+.grade-score{font-family:var(--mono);font-size:18px;margin-top:8px}
+.grade-url{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px;word-break:break-all}
+.grade-A{color:var(--green);border-color:var(--green);background:rgba(34,197,94,0.05)}
+.grade-B{color:var(--blue);border-color:var(--blue);background:rgba(74,158,255,0.05)}
+.grade-C{color:var(--orange);border-color:var(--orange);background:rgba(249,115,22,0.05)}
+.grade-D{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.05)}
+.grade-F{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.08)}
+
+/* DIMENSION CARDS */
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.dim-card{background:var(--card);border:1px solid var(--border);padding:16px;cursor:pointer;transition:border-color 0.2s}
+.dim-card:hover,.dim-card.expanded{border-color:var(--accent)}
+.dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dim-name{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px}
+.dim-score{font-family:var(--mono);font-size:18px;font-weight:800}
+.dim-bar{height:4px;background:var(--border);margin-bottom:8px;border-radius:2px}
+.dim-fill{height:100%;border-radius:2px;transition:width 0.5s}
+.dim-findings{display:none;margin-top:12px;font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.8}
+.dim-card.expanded .dim-findings{display:block}
+
+/* RECOMMENDATIONS */
+.recs{background:var(--card);border:1px solid var(--accent);padding:24px;margin-bottom:24px}
+.rec-title{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:12px}
+.rec-item{font-size:12px;color:var(--text);padding:6px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.rec-item:last-child{border:none}
+
+/* CTA */
+.cta-box{background:var(--card);border:1px solid var(--border);padding:32px;text-align:center}
+.cta-title{font-family:var(--mono);font-size:14px;color:var(--accent);letter-spacing:2px;margin-bottom:8px}
+.cta-text{font-size:13px;color:var(--dim);margin-bottom:20px;line-height:1.6}
+.cta-btn{display:inline-block;padding:14px 32px;background:var(--accent);color:var(--bg);font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none;letter-spacing:2px}
+.cta-btn:hover{background:#c49315}
+
+@media(max-width:600px){.dim-grid{grid-template-columns:1fr}.scan-row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="nav">
+    <a href="/" class="nav-logo">SWARMGEO</a>
+    <div class="nav-links"><a href="/shop/">shop</a><a href="/deed/">deeds</a><a href="/">home</a></div>
+</div>
+<div class="main">
+    <h1>How does AI <em>see your website?</em></h1>
+    <div class="subtitle">Free GEO scan. 6 dimensions. 30 seconds. No signup.</div>
+
+    <div class="scanner" id="scanner">
+        <div class="scan-label">ENTER YOUR URL</div>
+        <div class="scan-row">
+            <input class="scan-input" id="url-input" placeholder="https://yoursite.com" autofocus>
+            <button class="scan-btn" id="scan-btn" onclick="startScan()">SCAN</button>
+        </div>
+        <div class="scan-note">We fetch your page, analyze it across 6 GEO dimensions, and show you exactly what AI models see.</div>
+    </div>
+
+    <div id="scanning" class="scanning" style="display:none">
+        Scanning... analyzing structured data, content, entities, citations, authority, technical access...
+    </div>
+
+    <div class="report" id="report">
+        <div id="grade-banner" class="grade-banner"></div>
+        <div class="dim-grid" id="dim-grid"></div>
+        <div class="recs" id="recs"></div>
+        <div class="cta-box" style="border-color:var(--accent)">
+            <div class="cta-title">FULL SITE GEO OPTIMIZATION</div>
+            <div style="font-family:var(--mono);font-size:36px;font-weight:800;color:var(--accent);margin:12px 0">$99</div>
+            <div class="cta-text" style="margin-bottom:8px">Complete site-wide deep scan. Every page analyzed. Custom recommendations.<br>Competitor comparison. Structured data rewrite. Priority fix checklist.</div>
+            <div style="font-size:11px;color:var(--dim);margin-bottom:20px;line-height:1.8">
+                Includes: Full 6-dimension report for every page | Structured data template (JSON-LD) | Content restructuring guide | Citation readiness playbook | Monthly monitoring setup | Delivered within 48 hours
+            </div>
+            <a href="https://buy.stripe.com/test_geo99" class="cta-btn" id="geo-buy-btn" onclick="buyGeo(event)">BUY FULL REPORT — $99</a>
+            <div style="font-size:9px;color:var(--dim);margin-top:8px">Secure checkout via Stripe. Report delivered to your email within 48 hours.</div>
+        </div>
+        <div class="cta-box" style="margin-top:16px">
+            <div class="cta-title">MONTHLY GEO MONITORING</div>
+            <div class="cta-text">We re-scan your site monthly, track score changes, and flag regressions.<br>Using our own AI on our own hardware. No API fees passed to you.</div>
+            <a href="/#contact" class="cta-btn" style="background:transparent;color:var(--accent);border:1px solid var(--accent)">CONTACT FOR PRICING</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const API='/geo/api';
+const dimNames={
+    structured_data:'STRUCTURED DATA',
+    content_clarity:'CONTENT CLARITY',
+    entity_density:'ENTITY DENSITY',
+    citation_readiness:'CITATION READY',
+    authority_signals:'AUTHORITY',
+    technical_access:'TECHNICAL',
+};
+
+function scoreColor(s){
+    if(s>=75)return'var(--green)';if(s>=50)return'var(--blue)';if(s>=35)return'var(--orange)';return'var(--red)';
+}
+
+async function startScan(){
+    const url=document.getElementById('url-input').value.trim();
+    if(!url)return;
+    const btn=document.getElementById('scan-btn');
+    btn.disabled=true;btn.textContent='SCANNING...';
+    document.getElementById('scanning').style.display='block';
+    document.getElementById('report').classList.remove('visible');
+
+    try{
+        const r=await fetch(API+'/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+        const d=await r.json();
+        if(d.error&&!d.scores){
+            alert('Scan failed: '+d.error);
+        }else{
+            renderReport(d);
+        }
+    }catch(e){alert('Error: '+e.message)}
+
+    btn.disabled=false;btn.textContent='SCAN';
+    document.getElementById('scanning').style.display='none';
+}
+
+document.getElementById('url-input').addEventListener('keydown',e=>{if(e.key==='Enter')startScan()});
+
+function renderReport(d){
+    const report=document.getElementById('report');
+    const gc='grade-'+d.grade;
+
+    // Grade banner
+    document.getElementById('grade-banner').className='grade-banner '+gc;
+    document.getElementById('grade-banner').innerHTML=`
+        <div class="grade-letter">${d.grade}</div>
+        <div class="grade-score">${d.overall_score}/100 GEO Score</div>
+        <div class="grade-url">${d.url}</div>`;
+
+    // Dimension cards
+    const grid=document.getElementById('dim-grid');
+    grid.innerHTML='';
+    for(const[key,dim]of Object.entries(d.scores||{})){
+        const name=dimNames[key]||key;
+        const color=scoreColor(dim.score);
+        const findings=(dim.findings||[]).map(f=>'<div>'+f+'</div>').join('');
+        grid.innerHTML+=`<div class="dim-card" onclick="this.classList.toggle('expanded')">
+            <div class="dim-header">
+                <div class="dim-name">${name}</div>
+                <div class="dim-score" style="color:${color}">${dim.score}</div>
+            </div>
+            <div class="dim-bar"><div class="dim-fill" style="width:${dim.score}%;background:${color}"></div></div>
+            <div class="dim-findings">${findings}</div>
+        </div>`;
+    }
+
+    // Recommendations
+    const recs=document.getElementById('recs');
+    if(d.recommendations&&d.recommendations.length>0){
+        recs.innerHTML=`<div class="rec-title">TOP RECOMMENDATIONS</div>`+
+            d.recommendations.map((r,i)=>`<div class="rec-item">${i+1}. ${r}</div>`).join('');
+        recs.style.display='block';
+    }else{
+        recs.style.display='none';
+    }
+
+    report.classList.add('visible');
+    report.scrollIntoView({behavior:'smooth'});
+}
+async function buyGeo(e){
+    e.preventDefault();
+    const btn=document.getElementById('geo-buy-btn');
+    btn.textContent='PROCESSING...';
+    try{
+        const r=await fetch('/shop/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({domain:'geo',package:'geo_report',email:''})});
+        const d=await r.json();
+        if(d.checkout_url)window.location.href=d.checkout_url;
+        else{btn.textContent='EMAIL build@swarmandbee.ai';alert('Contact build@swarmandbee.ai for GEO report purchase.');}
+    }catch(err){btn.textContent='EMAIL build@swarmandbee.ai';}
+}
+</script>
+</body>
+</html>

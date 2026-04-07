@@ -1,0 +1,133 @@
+{
+  "stats": {
+    "total": 10,
+    "l1_pass": 10,
+    "l1_fail": 0,
+    "l3_authentic": 2,
+    "l3_boilerplate": 8,
+    "l3_error": 0,
+    "l3_flagged": 8
+  },
+  "results": [
+    {
+      "block_id": "SB-2026-0404-01487",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"The assistant follows the system prompt's structured reporting format...\"",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"The assistant follows the system prompt's structured reporting format...\"\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01491",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"mild to moderate bilateral foraminal narrowing\" and \"mild bilateral subarticular recess narrowing\"",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"mild to moderate bilateral foraminal narrowing\" and \"mild bilateral subarticular recess narrowing\"\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01492",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The assistant response is truncated mid-sentence at Level L5-S1 (\"There is\"), leaving the report incomplete. It fails to provide a final impression or clinical correlation despite the system prompt requiring a \"structured reporting format.\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The assistant response is truncated mid-sentence at Level L5-S1 (\"There is\"), leaving the report incomplete. It fails to provide a final impression or clinical correlation despite the system prompt requiring a \"structured reporting format.\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01493",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning includes generic phrases such as \"moderate annular bulge,\" which could apply to any MRI report and does not reference specific content from the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning includes generic phrases such as \"moderate annular bulge,\" which could apply to any MRI report and does not reference specific content from the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01494",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The assistant fails to complete the report and ignores specific patient clinical context provided in the prompt.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The assistant fails to complete the report and ignores specific patient clinical context provided in the prompt.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01500",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning uses generic phrases such as \"systematically,\" \"structured reporting format,\" and does not reference specific content from the MRI images provided in the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning uses generic phrases such as \"systematically,\" \"structured reporting format,\" and does not reference specific content from the MRI images provided in the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01501",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning uses generic phrases like \"identifies,\" \"incorporates patient history including,\" and does not reference specific content from the MRI images or provide actual facts/calculations/claims.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning uses generic phrases like \"identifies,\" \"incorporates patient history including,\" and does not reference specific content from the MRI images or provide actual facts/calculations/claims.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01503",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning uses generic phrases such as \"systematically interpret imaging findings,\" and the report lacks specific references to actual facts from the MRI images provided in the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning uses generic phrases such as \"systematically interpret imaging findings,\" and the report lacks specific references to actual facts from the MRI images provided in the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01520",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning uses generic phrases such as \"systematically interpret imaging\", and the assistant does not reference specific content from the training pair. For example, there is no mention of disc morphology or signal characteristics for L1/L2 in this deed.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning uses generic phrases such as \"systematically interpret imaging\", and the assistant does not reference specific content from the training pair. For example, there is no mention of disc morphology or signal characteristics for L1/L2 in this deed.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01526",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning uses generic phrases such as \"significant foraminal narrowing,\" \"nerve root compression,\" and \"mild compression with surrounding edema\" without referencing specific content from the MRI image provided in the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning uses generic phrases such as \"significant foraminal narrowing,\" \"nerve root compression,\" and \"mild compression with surrounding edema\" without referencing specific content from the MRI image provided in the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    }
+  ]
+}

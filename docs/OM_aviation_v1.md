@@ -13,9 +13,9 @@
 |-------|-------|
 | **Domain** | Aviation |
 | **Total Deeded Pairs** | 41,477 |
-| **Royal Jelly (≥ 0.75)** | 22,812 (55%) |
-| **Honey (0.50–0.74)** | 12,443 (30%) |
-| **Propolis (< 0.50)** | 6,222 (15%) |
+| **Royal Jelly (≥ 0.85)** | 22,812 (55%) |
+| **Honey (0.70–0.84)** | 12,443 (30%) |
+| **Propolis (< 0.70)** | 6,222 (15%) |
 | **Mean Quality Score** | 0.72 (estimated, pre-tribunal) |
 | **Deed Coverage** | 100% — every pair titled |
 | **Anchor** | Hedera HCS (mainnet) |
@@ -99,9 +99,9 @@ Every pair was scored **twice per judge** (2-pass validation). If scores drifted
 
 | Tier | Score Range | Count | Description |
 |------|------------|-------|-------------|
-| **Royal Jelly** | ≥ 0.75 | 22,812 | Production-ready. Full deed. This ships. |
-| **Honey** | 0.50–0.74 | 12,443 | Usable. Improvable. Never discarded. |
-| **Propolis** | < 0.50 | 6,222 | Intelligence. Reveals issues before production. |
+| **Royal Jelly** | ≥ 0.85 | 22,812 | Production-ready. Full deed. This ships. |
+| **Honey** | 0.70–0.84 | 12,443 | Usable. Improvable. Never discarded. |
+| **Propolis** | < 0.70 | 6,222 | Intelligence. Reveals issues before production. |
 
 ### 3.4 Score Distribution
 

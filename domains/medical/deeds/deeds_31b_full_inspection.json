@@ -1,0 +1,253 @@
+{
+  "stats": {
+    "total": 20,
+    "l1_pass": 20,
+    "l1_fail": 0,
+    "l3_authentic": 16,
+    "l3_boilerplate": 4,
+    "l3_error": 0,
+    "l3_flagged": 11
+  },
+  "results": [
+    {
+      "block_id": "SB-2026-0404-01498",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The terms \"moderate-severe spinal canal stenosis,\" \"bilateral foraminal narrowing,\" and a small osteophyte at L5-S1 are cited in the deed's REASONING. However, these specific findings do not appear verbatim or with similar wording (e.g., moderate to severe) within any part of the ASSISTANT RESPONSE.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The terms \"moderate-severe spinal canal stenosis,\" \"bilateral foraminal narrowing,\" and a small osteophyte at L5-S1 are cited in the deed's REASONING. However, these specific findings do not appear verbatim or with similar wording (e.g., moderate to severe) within any part of the ASSISTANT RESPONSE.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01501",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"degenerative disc disease at multiple lumbar levels\" and specific \"nerve root compression at L3/4, L4/5, and L5/S1.\" These terms appear in the assistant response.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"degenerative disc disease at multiple lumbar levels\" and specific \"nerve root compression at L3/4, L4/5, and L5/S1.\" These terms appear in the assistant response.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01502",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"severe central canal stenosis\" and \"large disc herniation extending into the neural foramen on the right side\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"severe central canal stenosis\" and \"large disc herniation extending into the neural foramen on the right side\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01530",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"Left-sided Nerve Roots\" - The term appears as a general description of findings but does not appear verbatim in the assistant response. However, it is implied by mentioning specific effacement at left L3, L4, L5, and S1 nerve roots.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"Left-sided Nerve Roots\" - The term appears as a general description of findings but does not appear verbatim in the assistant response. However, it is implied by mentioning specific effacement at left L3, L4, L5, and S1 nerve roots.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01533",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"central canal diameter of approximately 10 mm\" - appears in ASSISTANT RESPONSE above.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"central canal diameter of approximately 10 mm\" - appears in ASSISTANT RESPONSE above.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01538",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"moderate signal intensity on T2-weighted imaging\" - appears in ASSISTANT RESPONSE; \"mild spinal canal stenosis\" at L2/L3 and slightly narrowed central canal dimensions consistent with mild spinal canal stenosis (L4/L5) - appear in ASSISTANT RESPONSE.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"moderate signal intensity on T2-weighted imaging\" - appears in ASSISTANT RESPONSE; \"mild spinal canal stenosis\" at L2/L3 and slightly narrowed central canal dimensions consistent with mild spinal canal stenosis (L4/L5) - appear in ASSISTANT RESPONSE.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01543",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"central spinal canal cross-sectional area is less than 13 mm\u00b2\" - appears as described; \"heterogeneous signal intensity on T2-weighted imaging,\" and the impression of findings including disc narrowing at L4/L5 level with mild central canal stenosis.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"central spinal canal cross-sectional area is less than 13 mm\u00b2\" - appears as described; \"heterogeneous signal intensity on T2-weighted imaging,\" and the impression of findings including disc narrowing at L4/L5 level with mild central canal stenosis.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01557",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The terms \"right foot drop noted on examination,\" \"right-sided sciatica with burning pain,\" and the correlation between mild edema to patient's fall history/hypertension are cited in the deed REASONING but do not appear or correlate directly within the ASSISTANT RESPONSE.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The terms \"right foot drop noted on examination,\" \"right-sided sciatica with burning pain,\" and the correlation between mild edema to patient's fall history/hypertension are cited in the deed REASONING but do not appear or correlate directly within the ASSISTANT RESPONSE.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01597",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"moderate foraminal narrowing bilaterally\" - appears as \"there is moderate foraminal narrowing bilaterally,\" and \"severe foraminal narrowing bilaterally\" - does not appear in the assistant response.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"moderate foraminal narrowing bilaterally\" - appears as \"there is moderate foraminal narrowing bilaterally,\" and \"severe foraminal narrowing bilaterally\" - does not appear in the assistant response.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01600",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"slightly desiccated\" at L1-L2 and \"significant desiccation with high signal intensity\" at L5-S1 both appear in the assistant response.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"slightly desiccated\" at L1-L2 and \"significant desiccation with high signal intensity\" at L5-S1 both appear in the assistant response.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01605",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"high signal intensity on T2-weighted images\" at L3-S1 - appears as \"increased signal intensity on T2-weighted images\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"high signal intensity on T2-weighted images\" at L3-S1 - appears as \"increased signal intensity on T2-weighted images\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01611",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"mildly hydrated\" disc with no significant bulging or herniation - appears as a general description of the findings in both responses. The term itself is not explicitly stated but implied by phrases like \"no evidence of disc signal abnormality suggestive of acute inflammation or infection,\" which corresponds to mild hydration.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"mildly hydrated\" disc with no significant bulging or herniation - appears as a general description of the findings in both responses. The term itself is not explicitly stated but implied by phrases like \"no evidence of disc signal abnormality suggestive of acute inflammation or infection,\" which corresponds to mild hydration.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01626",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "\"paraspinal tenderness at L5-S1\" and \"mechanical low back pain worse with sitting,\" as well as the mention of a CT lumbar spine 6 months ago \u2014 degenerative changes noted.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: \"paraspinal tenderness at L5-S1\" and \"mechanical low back pain worse with sitting,\" as well as the mention of a CT lumbar spine 6 months ago \u2014 degenerative changes noted.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01702",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"disc herniation\" - The ASSISTANT RESPONSE mentions a disc with mixed signal intensity and an extruded fragment extending into the left neural foramen. Although it does not use this exact phrase as in the deed's reasoning, both descriptions imply similar findings.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"disc herniation\" - The ASSISTANT RESPONSE mentions a disc with mixed signal intensity and an extruded fragment extending into the left neural foramen. Although it does not use this exact phrase as in the deed's reasoning, both descriptions imply similar findings.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01765",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"nuclear extrusion\" at L3/L4 and L5/S1 - appears as increased signal intensity indicating degenerative changes in the assistant response; \"severe foraminal narrowing bilaterally\" matches mild foraminal narrowing mentioned for both bilateral sides.",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"nuclear extrusion\" at L3/L4 and L5/S1 - appears as increased signal intensity indicating degenerative changes in the assistant response; \"severe foraminal narrowing bilaterally\" matches mild foraminal narrowing mentioned for both bilateral sides.\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01788",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The terms \"severe bulging with high signal intensity,\" and \"severe central canal stenosis\" at L3-L4 are mentioned in the deed REASONING. However, these specific findings do not appear verbatim or as closely paraphrased phrases within the provided ASSISTANT RESPONSE.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The terms \"severe bulging with high signal intensity,\" and \"severe central canal stenosis\" at L3-L4 are mentioned in the deed REASONING. However, these specific findings do not appear verbatim or as closely paraphrased phrases within the provided ASSISTANT RESPONSE.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01813",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"severe disc bulging with severe central canal narrowing\" at L3/L4, L4/L5, and L5/S1 - appears in the assistant response.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"severe disc bulging with severe central canal narrowing\" at L3/L4, L4/L5, and L5/S1 - appears in the assistant response.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01832",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"L4-L5 intervertebral disc space is narrowed compared to prior imaging\" - appears as \"The L4-L5 intervertebral disc space is narrowed compared to prior imaging.\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"L4-L5 intervertebral disc space is narrowed compared to prior imaging\" - appears as \"The L4-L5 intervertebral disc space is narrowed compared to prior imaging.\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01863",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"moderate disc desiccation with slightly increased T2 signal\" - appears as \"Moderate disc desiccation with slightly increased T2 signal.\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"moderate disc desiccation with slightly increased T2 signal\" - appears as \"Moderate disc desiccation with slightly increased T2 signal.\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0404-01865",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"narrowed disc space with increased signal intensity on T2-weighted images\" - appears as \"The intervertebral disc space appears narrowed with increased signal intensity on T2-weighted images\"",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"narrowed disc space with increased signal intensity on T2-weighted images\" - appears as \"The intervertebral disc space appears narrowed with increased signal intensity on T2-weighted images\"\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    }
+  ]
+}

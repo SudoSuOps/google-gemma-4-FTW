@@ -27,7 +27,7 @@ ClawHash pairs are fundamentally different from existing domains (grants, medica
 | Attack generation | Claude API (claude-sonnet-4-20250514) | API | Superior at crafting sophisticated, realistic attack patterns |
 | Defense generation | qwen3.5:27b | localhost:11434 (GPU0) | Base model, unbiased, strong reasoning, local speed |
 | Scale A | gemma3:12b | localhost:11434 (GPU1) | Existing tribunal judge |
-| Scale B | qwen2.5:7b | 192.168.0.99:11434 (Whale) | Existing tribunal judge |
+| Scale B | qwen2.5:32b | localhost:11434 (GPU0) | Existing tribunal scale |
 
 ## Sub-Algorithm Distribution
 
@@ -224,7 +224,7 @@ If calibration shows the existing 5 dimensions can't distinguish good from bad C
 
 - `anthropic` Python SDK (for Claude API calls)
 - `ollama` running on localhost with `qwen3.5:27b` loaded
-- Existing tribunal infrastructure (PostgreSQL, gemma3:12b, qwen2.5:7b)
+- Existing tribunal infrastructure (PostgreSQL, gemma3:12b, qwen2.5:32b)
 - `ANTHROPIC_API_KEY` environment variable
 
 ## Success Criteria

@@ -14,6 +14,8 @@ import json
 import hashlib
 import sys
 
+from swarm_config import cfg
+
 
 def sha256(data):
     return hashlib.sha256(data.encode()).hexdigest()
@@ -37,12 +39,7 @@ def verify_classification(deed):
     score = deed["quality"]["final_score"]
     tier = deed["classification"]["tier"]
 
-    if score >= 0.75:
-        expected = "royal_jelly"
-    elif score >= 0.50:
-        expected = "honey"
-    else:
-        expected = "propolis"
+    expected = cfg.classify(score)
 
     match = tier == expected
     print(f"  Classification: {'PASS' if match else 'FAIL'} (score={score} → {expected})")

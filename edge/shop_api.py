@@ -34,6 +34,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
+from swarm_config import cfg
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [shop] %(levelname)s %(message)s")
 log = logging.getLogger("shop")
 
@@ -230,12 +232,12 @@ def build_package(domain, pair_count, order_id):
 | Metric | Value |
 |--------|-------|
 | Total Pairs | {actual_count:,} |
-| Tier | Royal Jelly (weight >= 0.85) |
+| Tier | Royal Jelly (weight >= {cfg.rj_threshold}) |
 | Average Score | {float(avg_s or 0):.4f} |
 | Score Range | {float(min_s or 0):.4f} — {float(max_s or 0):.4f} |
-| Scale A | gemma3:12b (Google Gemma 3, 12B base, unmodified) |
-| Scale B | qwen2.5:7b (Qwen 2.5, 7B base, unmodified) |
-| Weighing | 2-pass dual-scale tribunal. Drift threshold: 0.15 |
+| Scale A | {cfg.scale_a_model} (base, unmodified) |
+| Scale B | {cfg.scale_b_model} (base, unmodified) |
+| Weighing | 2-pass dual-scale tribunal. Drift threshold: {cfg.drift_threshold} |
 
 ## Domain Description
 
@@ -255,9 +257,9 @@ Every pair in this package:
 
 | Tier | Count | Percentage |
 |------|-------|-----------|
-| Royal Jelly (>= 0.85) | {tier_stats.get('royal-jelly', 0):,} | {tier_stats.get('royal-jelly', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
-| Honey (0.70-0.84) | {tier_stats.get('honey', 0):,} | {tier_stats.get('honey', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
-| Propolis (< 0.70) | {tier_stats.get('propolis', 0):,} | {tier_stats.get('propolis', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
+| Royal Jelly (>= {cfg.rj_threshold}) | {tier_stats.get('royal-jelly', 0):,} | {tier_stats.get('royal-jelly', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
+| Honey ({cfg.honey_threshold}-{cfg.rj_threshold - 0.01:.2f}) | {tier_stats.get('honey', 0):,} | {tier_stats.get('honey', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
+| Propolis (< {cfg.honey_threshold}) | {tier_stats.get('propolis', 0):,} | {tier_stats.get('propolis', 0) / max(sum(tier_stats.values()), 1) * 100:.1f}% |
 
 ## Included Formats
 
@@ -292,8 +294,8 @@ https://swarmandbee.ai
             "order_id": order_id, "domain": domain, "pair_count": actual_count,
             "tier": "royal_jelly", "avg_score": float(avg_s or 0),
             "min_score": float(min_s or 0), "max_score": float(max_s or 0),
-            "scales": ["gemma3:12b", "qwen2.5:7b"], "weighing": "2-pass dual-scale tribunal",
-            "drift_threshold": 0.15, "tier_distribution": tier_stats,
+            "scales": [cfg.scale_a_model, cfg.scale_b_model], "weighing": "2-pass dual-scale tribunal",
+            "drift_threshold": cfg.drift_threshold, "tier_distribution": tier_stats,
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
         zf.writestr(f"{prefix}/quality_report.json", json.dumps(quality, indent=2))

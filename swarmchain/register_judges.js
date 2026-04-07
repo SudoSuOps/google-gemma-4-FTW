@@ -48,9 +48,9 @@ const JUDGES = [
             ens: "swarmprotocol.eth",
             deedFormat: "swarmdeed_v1",
             classification: {
-                royal_jelly: ">= 0.75",
-                honey: "0.50-0.74",
-                propolis: "< 0.50"
+                royal_jelly: ">= 0.85",
+                honey: "0.70-0.84",
+                propolis: "< 0.70"
             }
         },
         operator: {
@@ -94,9 +94,9 @@ const JUDGES = [
             ens: "swarmprotocol.eth",
             deedFormat: "swarmdeed_v1",
             classification: {
-                royal_jelly: ">= 0.75",
-                honey: "0.50-0.74",
-                propolis: "< 0.50"
+                royal_jelly: ">= 0.85",
+                honey: "0.70-0.84",
+                propolis: "< 0.70"
             }
         },
         operator: {

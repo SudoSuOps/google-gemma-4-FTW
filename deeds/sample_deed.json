@@ -40,7 +40,7 @@
   },
   "classification": {
     "tier": "royal_jelly",
-    "threshold": ">= 0.75"
+    "threshold": ">= 0.85"
   },
   "sealed_at": "2026-03-17T14:22:08.000Z"
 }

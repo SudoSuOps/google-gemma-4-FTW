@@ -17,16 +17,18 @@ import time
 import sys
 from pathlib import Path
 
+from swarm_config import cfg
+
 # Judge models — BASE only, never modified
 JUDGE_A = {
-    "model": "google/gemma-4-E2B-it",
-    "label": "gemma-4-e2b",
-    "description": "Gemma 4 E2B base (2.3B effective) — unmodified from published state",
+    "model": "google/gemma-3-12b-it",
+    "label": cfg.scale_a_model,
+    "description": f"{cfg.scale_a_model} base — unmodified from published state",
 }
 JUDGE_B = {
-    "model": "Qwen/Qwen2.5-9B",
-    "label": "qwen-2.5-9b",
-    "description": "Qwen 2.5 9B base — unmodified from published state",
+    "model": "google/gemma-3-12b-it",
+    "label": cfg.scale_b_model,
+    "description": f"{cfg.scale_b_model} base — unmodified from published state",
 }
 
 SCORING_PROMPT = """You are an expert data quality judge. Score the following AI training pair on a scale of 0.00 to 1.00.
@@ -127,13 +129,14 @@ def fingerprint_pair(messages):
 
 
 def classify(score):
-    """Royal Jelly classification."""
-    if score >= 0.75:
-        return "royal_jelly", ">= 0.75"
-    elif score >= 0.50:
-        return "honey", "0.50-0.74"
+    """Weight class classification. Source of truth: swarm_config → swarm.yaml"""
+    tier = cfg.classify(score)
+    if tier == "royal_jelly":
+        return tier, f">= {cfg.rj_threshold}"
+    elif tier == "honey":
+        return tier, f"{cfg.honey_threshold}-{cfg.rj_threshold - 0.01:.2f}"
     else:
-        return "propolis", "< 0.50"
+        return tier, f"< {cfg.honey_threshold}"
 
 
 def run_tribunal(input_path, output_path, judge_a_endpoint=None, judge_b_endpoint=None,

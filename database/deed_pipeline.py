@@ -27,10 +27,10 @@ import urllib.request
 from pathlib import Path
 
 # ─── CONFIG ───
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+DB_URL = os.environ.get("DATABASE_URL", "")
 MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "http://192.168.0.102:9000")
 MINIO_ACCESS = os.environ.get("MINIO_ACCESS", "swarmbee")
-MINIO_SECRET = os.environ.get("MINIO_SECRET", "SwarmAndBee2026")
+MINIO_SECRET = os.environ.get("MINIO_SECRET", "")
 MINIO_BUCKET = "swarmchain-proofs"
 HEDERA_TOPIC = "0.0.10291838"
 

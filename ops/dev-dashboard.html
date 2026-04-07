@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwarmDev — Operations Dashboard</title>
+<style>
+:root {
+    --bg:#05050a;--card:#0a0a12;--border:#141420;--text:#c0c0cc;
+    --dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;
+    --blue:#4a9eff;--purple:#9b59b6;--mono:'SF Mono','JetBrains Mono',monospace;
+    --sans:'Inter',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+.top{position:fixed;top:0;width:100%;background:rgba(5,5,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;height:48px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.top-logo{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700}
+.top-status{display:flex;gap:16px;align-items:center}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.top-time{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:60px 16px 16px;max-width:1400px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--border);padding:16px;min-height:100px}
+.card-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.card-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
+.card-sub{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:4px}
+.span2{grid-column:span 2}
+.span4{grid-column:span 4}
+.gpu-row{display:flex;gap:12px;margin-bottom:8px;padding:10px;background:var(--bg);border:1px solid var(--border)}
+.gpu-id{font-family:var(--mono);font-size:11px;color:var(--blue);min-width:50px}
+.gpu-bar-wrap{flex:1;height:16px;background:var(--border);position:relative;overflow:hidden}
+.gpu-bar{height:100%;transition:width 0.5s}
+.gpu-stats{font-family:var(--mono);font-size:10px;color:var(--dim);min-width:240px;text-align:right}
+.cook-card{background:var(--bg);border:1px solid var(--border);padding:12px;margin-bottom:8px}
+.cook-name{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:6px}
+.cook-progress{height:6px;background:var(--border);margin:8px 0}
+.cook-fill{height:100%;background:linear-gradient(90deg,var(--accent),#e6b422);transition:width 0.5s}
+.cook-stats{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--dim)}
+.node-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.node-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.node-online{background:var(--green)}
+.node-offline{background:var(--red)}
+.node-cooking{background:var(--accent);animation:pulse 1s infinite}
+.node-name{font-family:var(--mono);font-size:11px;flex:1}
+.node-detail{font-family:var(--mono);font-size:9px;color:var(--dim);text-align:right}
+.db-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
+.db-key{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.db-val{font-family:var(--mono);font-size:10px;color:var(--text)}
+.ens-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)}
+.ens-name{font-family:var(--mono);font-size:10px;color:var(--blue);flex:1}
+.ens-status{font-family:var(--mono);font-size:9px;padding:2px 6px}
+.ens-live{color:var(--green);border:1px solid var(--green)}
+.ens-pending{color:var(--dim);border:1px solid var(--border)}
+.loss-chart{width:100%;height:120px;position:relative;margin-top:8px}
+.loss-chart canvas{width:100%;height:100%}
+.storage-bar{display:flex;height:20px;margin:4px 0;gap:1px}
+.storage-seg{height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:var(--bg)}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.span4{grid-column:span 2}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}}
+</style>
+</head>
+<body>
+
+<div class="top">
+    <div class="top-logo">SWARMDEV</div>
+    <div class="top-status">
+        <div class="pulse"></div>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--green)">OPERATIONAL</span>
+        <span class="top-time" id="clock"></span>
+    </div>
+</div>
+
+<div class="grid" id="dashboard">
+    <!-- Row 1: Key metrics -->
+    <div class="card">
+        <div class="card-label">Total Pairs</div>
+        <div class="card-val" id="total-pairs">1,303,981</div>
+        <div class="card-sub">PostgreSQL on NAS RAID</div>
+    </div>
+    <div class="card">
+        <div class="card-label">Active Cooks</div>
+        <div class="card-val" style="color:var(--accent)" id="active-cooks">1</div>
+        <div class="card-sub">Gemma 4 31B — GPU 0</div>
+    </div>
+    <div class="card">
+        <div class="card-label">Fleet Nodes</div>
+        <div class="card-val" id="fleet-count">6</div>
+        <div class="card-sub">3 online / 3 standby</div>
+    </div>
+    <div class="card">
+        <div class="card-label">ENS Domains</div>
+        <div class="card-val">78</div>
+        <div class="card-sub">7 Tier-1 active</div>
+    </div>
+
+    <!-- Row 2: GPU Status -->
+    <div class="card span4">
+        <div class="card-label">GPU Status</div>
+        <div class="gpu-row">
+            <div class="gpu-id">GPU 0</div>
+            <div class="gpu-bar-wrap"><div class="gpu-bar" style="width:99%;background:var(--accent)"></div></div>
+            <div class="gpu-stats">99% | 34.5 GB | 300W | 69°C | RTX PRO 6000 Blackwell</div>
+        </div>
+        <div class="gpu-row">
+            <div class="gpu-id">GPU 1</div>
+            <div class="gpu-bar-wrap"><div class="gpu-bar" style="width:0%;background:var(--green)"></div></div>
+            <div class="gpu-stats">0% | 0 GB | 15W | 37°C | RTX PRO 6000 Blackwell — IDLE</div>
+        </div>
+    </div>
+
+    <!-- Row 3: Active Cook + Loss Chart -->
+    <div class="card span2">
+        <div class="card-label">Active Cook — swarmGrant-Gemma4-31B</div>
+        <div class="cook-card">
+            <div class="cook-name">google/gemma-4-31B-it → QLoRA r=64 α=32</div>
+            <div class="cook-progress"><div class="cook-fill" id="cook-progress" style="width:31%"></div></div>
+            <div class="cook-stats">
+                <span>Step <span id="cook-step">990</span>/3,204</span>
+                <span>Epoch <span id="cook-epoch">0.88</span></span>
+                <span>ETA ~40h</span>
+            </div>
+        </div>
+        <div class="cook-card">
+            <div class="cook-stats">
+                <span>Eval Loss: <span style="color:var(--accent)" id="cook-eval">0.6339</span></span>
+                <span>LR: 9.87e-06</span>
+                <span>Batch: 32 eff</span>
+            </div>
+        </div>
+        <div style="margin-top:8px">
+            <div class="card-label">Loss Trajectory</div>
+            <canvas id="loss-canvas" width="500" height="100"></canvas>
+        </div>
+    </div>
+
+    <!-- Row 3b: Fleet -->
+    <div class="card span2">
+        <div class="card-label">Fleet Status</div>
+        <div class="node-row">
+            <div class="node-dot node-cooking"></div>
+            <div class="node-name">swarmrails</div>
+            <div class="node-detail">2× RTX PRO 6000 | Xeon 72T | 256GB | GPU0 cooking</div>
+        </div>
+        <div class="node-row">
+            <div class="node-dot node-online"></div>
+            <div class="node-name">whale</div>
+            <div class="node-detail">RTX 3090 24GB | Ryzen 9 | 192.168.0.99</div>
+        </div>
+        <div class="node-row">
+            <div class="node-dot node-online"></div>
+            <div class="node-name">sigedge (jetson)</div>
+            <div class="node-detail">Orin Nano 8GB | 6W | 192.168.0.79</div>
+        </div>
+        <div class="node-row">
+            <div class="node-dot node-online"></div>
+            <div class="node-name">zima-lite (web)</div>
+            <div class="node-detail">swarmandbee.ai | CF Tunnel | 192.168.0.173</div>
+        </div>
+        <div class="node-row">
+            <div class="node-dot node-offline"></div>
+            <div class="node-name">zima-edge-1</div>
+            <div class="node-detail">N150 + T1000 (pending) | 192.168.0.230</div>
+        </div>
+        <div class="node-row">
+            <div class="node-dot node-online"></div>
+            <div class="node-name">NAS (minechain)</div>
+            <div class="node-detail">Ryzen V1500B | RAID1 2TB | PG + MinIO + IPFS</div>
+        </div>
+
+        <div class="card-label" style="margin-top:16px">Storage</div>
+        <div class="storage-bar">
+            <div class="storage-seg" style="flex:41;background:var(--accent)">NAS 41%</div>
+            <div class="storage-seg" style="flex:52;background:var(--blue)">/data2 52%</div>
+            <div class="storage-seg" style="flex:13;background:var(--purple)">/data1 13%</div>
+            <div class="storage-seg" style="flex:31;background:var(--green)">root 31%</div>
+        </div>
+        <div class="cook-stats" style="margin-top:4px">
+            <span>NAS: 1.1TB free</span>
+            <span>/data2: 426GB free</span>
+            <span>/data1: 761GB free</span>
+        </div>
+    </div>
+
+    <!-- Row 4: Database + MinIO -->
+    <div class="card">
+        <div class="card-label">PostgreSQL (Hot)</div>
+        <div class="db-row"><div class="db-key">HOST</div><div class="db-val">NAS :5433</div></div>
+        <div class="db-row"><div class="db-key">PAIRS</div><div class="db-val">1,303,981</div></div>
+        <div class="db-row"><div class="db-key">DEEDS</div><div class="db-val">0 (pre-tribunal)</div></div>
+        <div class="db-row"><div class="db-key">EDGES</div><div class="db-val">0 (pre-tribunal)</div></div>
+        <div class="db-row"><div class="db-key">TABLES</div><div class="db-val">14</div></div>
+        <div class="db-row"><div class="db-key">VIEWS</div><div class="db-val">4 materialized</div></div>
+        <div class="db-row"><div class="db-key">medical</div><div class="db-val">417,136</div></div>
+        <div class="db-row"><div class="db-key">cre</div><div class="db-val">810,097</div></div>
+        <div class="db-row"><div class="db-key">aviation</div><div class="db-val">41,477</div></div>
+        <div class="db-row"><div class="db-key">grants</div><div class="db-val">35,271</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-label">MinIO (Cold)</div>
+        <div class="db-row"><div class="db-key">HOST</div><div class="db-val">NAS :9000</div></div>
+        <div class="db-row"><div class="db-key">STATUS</div><div class="db-val" style="color:var(--green)">HEALTHY</div></div>
+        <div class="db-row"><div class="db-key">gold-vault</div><div class="db-val">Gold data</div></div>
+        <div class="db-row"><div class="db-key">platinum-vault</div><div class="db-val">Platinum data</div></div>
+        <div class="db-row"><div class="db-key">mri-vault</div><div class="db-val">Medical imaging</div></div>
+        <div class="db-row"><div class="db-key">model-weights</div><div class="db-val">Model storage</div></div>
+        <div class="db-row"><div class="db-key">swarmchain-proofs</div><div class="db-val">Deed archive</div></div>
+        <div class="db-row"><div class="db-key">hedera-receipts</div><div class="db-val">Anchor receipts</div></div>
+        <div class="db-row"><div class="db-key">training-data</div><div class="db-val">Training sets</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-label">IPFS (Public)</div>
+        <div class="db-row"><div class="db-key">NODE</div><div class="db-val">swarmrails</div></div>
+        <div class="db-row"><div class="db-key">PEERS</div><div class="db-val" style="color:var(--green)">47+</div></div>
+        <div class="db-row"><div class="db-key">KUBO</div><div class="db-val">v0.33.2</div></div>
+        <div class="db-row"><div class="db-key">PINS</div><div class="db-val">SwarmGraph UI</div></div>
+        <div class="db-row"><div class="db-key">CID</div><div class="db-val" style="font-size:8px">bafybei...cvbctpu</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-label">Hedera (Trust)</div>
+        <div class="db-row"><div class="db-key">NETWORK</div><div class="db-val">Mainnet</div></div>
+        <div class="db-row"><div class="db-key">OPERATOR</div><div class="db-val">0.0.10291827</div></div>
+        <div class="db-row"><div class="db-key">TOPIC</div><div class="db-val">0.0.10291838</div></div>
+        <div class="db-row"><div class="db-key">ANCHORS</div><div class="db-val">pending</div></div>
+        <div class="db-row"><div class="db-key">VERIFY</div><div class="db-val"><a href="https://hashscan.io/mainnet/topic/0.0.10291838" style="color:var(--accent);text-decoration:none;font-size:9px">hashscan.io →</a></div></div>
+    </div>
+
+    <!-- Row 5: ENS Domains -->
+    <div class="card span2">
+        <div class="card-label">ENS Protocol Stack (Tier 1)</div>
+        <div class="ens-row"><div class="ens-name">swarmandbee.eth</div><div class="ens-status ens-live">LIVE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmchain.eth</div><div class="ens-status ens-live">LIVE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmgraph.eth</div><div class="ens-status ens-live">LIVE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmledger.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmepoch.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmenergy.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmprotocol.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+        <div class="ens-row"><div class="ens-name">defendable.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+        <div class="ens-row"><div class="ens-name">swarmos.eth</div><div class="ens-status ens-pending">WIRE</div></div>
+    </div>
+
+    <div class="card span2">
+        <div class="card-label">Competition — Kaggle Gemma 4 ($200K)</div>
+        <div class="db-row"><div class="db-key">REPO</div><div class="db-val">SudoSuOps/google-gemma-4-FTW</div></div>
+        <div class="db-row"><div class="db-key">COMMITS</div><div class="db-val">6</div></div>
+        <div class="db-row"><div class="db-key">DEADLINE</div><div class="db-val">May 18, 2026 (45 days)</div></div>
+        <div class="db-row"><div class="db-key">DOMAINS</div><div class="db-val">medical / CRE / aviation / grants</div></div>
+        <div class="db-row"><div class="db-key">PAIRS</div><div class="db-val">1,303,981 tribunal-ready</div></div>
+        <div class="db-row"><div class="db-key">WRITER</div><div class="db-val" style="color:var(--accent)">Gemma 4 31B — COOKING</div></div>
+        <div class="db-row"><div class="db-key">JUDGE</div><div class="db-val">Gemma 4 E2B (pending deploy)</div></div>
+        <div class="db-row"><div class="db-key">GRAPH</div><div class="db-val" style="color:var(--green)">swarmgraph.eth.limo LIVE</div></div>
+        <div class="db-row"><div class="db-key">THESIS</div><div class="db-val">Defendable AI at the edge</div></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card span4" style="text-align:center;padding:12px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--dim)">SWARM & BEE LLC — DEFENDABLE AI INTELLIGENCE — swarmdev.eth</span>
+    </div>
+</div>
+
+<script>
+// Clock
+function updateClock(){
+    document.getElementById('clock').textContent = new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// Loss chart
+const canvas = document.getElementById('loss-canvas');
+const ctx = canvas.getContext('2d');
+const losses = [
+    {step:240,loss:15.27},{step:250,loss:14.34},{step:260,loss:15.40},
+    {step:270,loss:14.90},{step:280,loss:15.18},{step:290,loss:14.16},
+    {step:300,loss:13.28},{step:310,loss:12.90},{step:320,loss:12.08},
+    {step:610,loss:11.22},{step:620,loss:10.81},{step:630,loss:10.03},{step:640,loss:11.05}
+];
+const evals = [{step:320,loss:0.7534},{step:640,loss:0.6339}];
+
+function drawChart(){
+    const w=canvas.width, h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#0a0a12';ctx.fillRect(0,0,w,h);
+
+    // Grid
+    ctx.strokeStyle='#141420';ctx.lineWidth=0.5;
+    for(let i=0;i<5;i++){let y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+
+    // Train loss line
+    if(losses.length<2)return;
+    const minStep=losses[0].step,maxStep=losses[losses.length-1].step;
+    const minLoss=8,maxLoss=16;
+    ctx.strokeStyle='#d4a017';ctx.lineWidth=1.5;ctx.beginPath();
+    losses.forEach((p,i)=>{
+        let x=(p.step-minStep)/(maxStep-minStep)*w;
+        let y=h-(p.loss-minLoss)/(maxLoss-minLoss)*h;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // Eval loss dots
+    ctx.fillStyle='#22c55e';
+    evals.forEach(p=>{
+        let x=(p.step-minStep)/(maxStep-minStep)*w;
+        ctx.beginPath();ctx.arc(x,h-20,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#22c55e';ctx.font='9px monospace';
+        ctx.fillText(p.loss.toFixed(4),x+6,h-16);
+    });
+
+    // Labels
+    ctx.fillStyle='#505068';ctx.font='8px monospace';
+    ctx.fillText('train loss',4,10);
+    ctx.fillStyle='#22c55e';ctx.fillText('eval loss',4,20);
+}
+drawChart();
+</script>
+</body>
+</html>

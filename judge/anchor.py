@@ -53,20 +53,16 @@ def anchor_to_hedera(merkle_root, batch_index, leaf_count, block_range, topic_id
         print(f"  [SKIP] No Hedera credentials — set HEDERA_OPERATOR_ID and HEDERA_OPERATOR_KEY")
         return {"status": "no_credentials", "merkle_root": merkle_root}
 
-    # Submit via Hedera REST API or SDK
-    # For production, use the Hedera Python SDK:
-    #   from hedera import Client, TopicMessageSubmitTransaction
-    #   client = Client.forMainnet()
-    #   client.setOperator(operator_id, operator_key)
-    #   tx = TopicMessageSubmitTransaction().setTopicId(topic_id).setMessage(message)
-    #   receipt = tx.execute(client).getReceipt(client)
-
-    print(f"  [ANCHOR] {merkle_root[:16]}... → {topic_id}")
+    # Production anchoring via SwarmTribunal hedera_anchor.js (Node.js SDK).
+    # This Python module does NOT submit to Hedera — use the JS implementation.
+    # NEVER return "submitted" without actual submission.
+    print(f"  [NOT SUBMITTED] {merkle_root[:16]}... — Python anchor stub, use hedera_anchor.js")
     return {
-        "status": "submitted",
+        "status": "not_submitted",
         "merkle_root": merkle_root,
         "topic": topic_id,
         "verify": f"{HASHSCAN_URL}/{topic_id}",
+        "action_required": "Run: node swarmchain/hedera_anchor.js batch <manifest>",
     }
 
 

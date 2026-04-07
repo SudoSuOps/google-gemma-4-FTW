@@ -49,6 +49,7 @@ CLAUDE_TEMPERATURE = 0.9
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:27b")
+OLLAMA_RED_MODEL = os.environ.get("OLLAMA_RED_MODEL", "gemma4:31b")
 OLLAMA_TEMPERATURE = 0.7
 
 # Map template filename stems to sub-algorithm names
@@ -59,6 +60,9 @@ SUB_ALGORITHM_MAP = {
     "supply": "Supply",
     "sandbox": "Sandbox",
     "audit": "Audit",
+    "drift": "Drift",
+    "corruptturn": "CorruptTurn",
+    "fakeexec": "FakeExec",
 }
 
 # ─── PERSONAS ─────────────────────────────────────────────────────────────────
@@ -237,11 +241,11 @@ def call_claude(prompt: str, api_key: str) -> str | None:
 
 
 def call_ollama_redteam(prompt: str) -> str | None:
-    """Call Qwen via ollama to generate an attack prompt (local red-team fallback)."""
-    # /no_think disables Qwen 3.5 reasoning blocks — 3-5x faster, no quality loss
+    """Call red-team model via ollama to generate an attack prompt."""
+    # /no_think disables reasoning blocks — 3-5x faster, no quality loss
     # for attack generation (we want creative output, not chain-of-thought)
     payload = json.dumps({
-        "model": OLLAMA_MODEL,
+        "model": OLLAMA_RED_MODEL,
         "stream": False,
         "options": {"temperature": 0.9},
         "messages": [
@@ -431,6 +435,7 @@ def generate_pair(
             "expected_behavior": template.get("expected_behavior", ""),
             "variant_index": variant_index,
             "generator": "generate_clawhash.py",
+            "red_model": OLLAMA_RED_MODEL if not api_key else CLAUDE_MODEL,
             "defense_model": OLLAMA_MODEL,
             "prompt_hash": prompt_hash,
         },
@@ -550,7 +555,7 @@ def main():
         if api_key:
             print(f"  Red team:       {CLAUDE_MODEL} (temp {CLAUDE_TEMPERATURE})")
         else:
-            print(f"  Red team:       {OLLAMA_MODEL} LOCAL (temp 0.9) — no ANTHROPIC_API_KEY")
+            print(f"  Red team:       {OLLAMA_RED_MODEL} LOCAL (temp 0.9)")
         print(f"  Blue team:      {OLLAMA_MODEL} (temp {OLLAMA_TEMPERATURE})")
     print()
 
@@ -577,10 +582,15 @@ def main():
     print(f"  Generation plan: {len(plan)} pairs")
     print()
 
-    # ─── Generate pairs ───
+    # ─── Generate pairs (incremental write — crash resilient) ───
     pairs = []
     seen_fingerprints = set()
     errors = 0
+    db_batch = []  # Buffer for periodic DB inserts
+
+    # Open output file in append mode — each pair written immediately
+    # If process dies, all completed pairs are on disk
+    outfile = open(output_path, "a")
 
     for i, assignment in enumerate(plan):
         template = assignment["template"]
@@ -605,12 +615,29 @@ def main():
             seen_fingerprints.add(pair["fingerprint"])
 
             pairs.append(pair)
-            print(f"OK ({pair['char_count']} chars)")
+
+            # Write immediately to disk — crash resilient
+            outfile.write(json.dumps(pair, ensure_ascii=False) + "\n")
+            outfile.flush()
+
+            # Buffer for periodic DB insert (every 50 pairs)
+            if not args.no_db:
+                db_batch.append(pair)
+                if len(db_batch) >= 50:
+                    inserted = insert_pairs_to_db(db_batch)
+                    print(f"OK ({pair['char_count']} chars) [DB +{inserted}]")
+                    db_batch = []
+                else:
+                    print(f"OK ({pair['char_count']} chars)")
+            else:
+                print(f"OK ({pair['char_count']} chars)")
 
         except Exception as e:
             print(f"ERROR: {e}")
             errors += 1
             continue
+
+    outfile.close()
 
     print()
     print(f"  Generated: {len(pairs)} pairs ({errors} errors)")
@@ -619,23 +646,16 @@ def main():
         print("  No pairs generated. Exiting.")
         sys.exit(1)
 
-    # ─── Write JSONL ───
-    with open(output_path, "w") as f:
-        for pair in pairs:
-            f.write(json.dumps(pair, ensure_ascii=False) + "\n")
-    print(f"  Written: {output_path} ({len(pairs)} lines)")
-
     # ─── Verify file ───
     with open(output_path) as f:
         line_count = sum(1 for _ in f)
-    print(f"  Verified: {line_count} lines in output file")
+    print(f"  Written + verified: {output_path} ({line_count} lines)")
 
-    # ─── DB insert ───
-    if not args.no_db:
-        print()
-        print("  Inserting into PostgreSQL...")
-        inserted = insert_pairs_to_db(pairs)
-        print(f"  DB: {inserted} rows inserted")
+    # ─── Flush remaining DB batch ───
+    if not args.no_db and db_batch:
+        print(f"  Flushing final {len(db_batch)} pairs to PostgreSQL...")
+        inserted = insert_pairs_to_db(db_batch)
+        print(f"  DB: {inserted} rows inserted (final batch)")
 
     # ─── Summary ───
     print()

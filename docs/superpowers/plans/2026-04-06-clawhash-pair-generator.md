@@ -741,7 +741,7 @@ Expected: ~100 pairs.
 
 ### Task 6: Load Into Tribunal + Weigh (Calibration)
 
-**Prerequisites:** Tribunal must be running (gemma3:12b on GPU1, qwen2.5:7b on Whale). If tribunal is stopped for GPU install, this task waits.
+**Prerequisites:** Tribunal must be running (gemma3:12b on GPU1, qwen2.5:32b on GPU0). If tribunal is stopped for GPU install, this task waits.
 
 - [ ] **Step 1: Load clawhash pairs into bin**
 

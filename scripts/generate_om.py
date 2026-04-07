@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 from collections import Counter
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+DB_URL = os.environ.get("DATABASE_URL", "")
 
 DOMAIN_DESCRIPTIONS = {
     "grants": """This offering contains **federal grants intelligence** — SBIR/STTR proposals, NSF/NIH

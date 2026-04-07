@@ -54,7 +54,7 @@ Agent → calls check_status({batch_id: "MCP-a1b2c3d4"})
 | Judge | Model | Hardware | Modified? |
 |-------|-------|----------|-----------|
 | A | gemma3:12b | RTX PRO 6000 Blackwell | No — base |
-| B | qwen2.5:7b | RTX 3090 Ampere | No — base |
+| B | qwen2.5:32b | RTX PRO 6000 Blackwell | No — base |
 
 ## Pricing
 

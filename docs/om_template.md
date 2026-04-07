@@ -13,9 +13,9 @@
 |-------|-------|
 | **Domain** | {DOMAIN_NAME} |
 | **Total Deeded Pairs** | {TOTAL_PAIRS} |
-| **Royal Jelly (≥ 0.75)** | {RJ_COUNT} ({RJ_PCT}%) |
-| **Honey (0.50–0.74)** | {HONEY_COUNT} ({HONEY_PCT}%) |
-| **Propolis (< 0.50)** | {PROPOLIS_COUNT} ({PROPOLIS_PCT}%) |
+| **Royal Jelly (≥ 0.85)** | {RJ_COUNT} ({RJ_PCT}%) |
+| **Honey (0.70–0.84)** | {HONEY_COUNT} ({HONEY_PCT}%) |
+| **Propolis (< 0.70)** | {PROPOLIS_COUNT} ({PROPOLIS_PCT}%) |
 | **Mean Quality Score** | {MEAN_SCORE} |
 | **Deed Coverage** | 100% — every pair titled |
 | **Anchor** | Hedera HCS (mainnet) |
@@ -70,9 +70,9 @@ Every pair was scored **twice per judge** (2-pass validation). If scores drifted
 
 | Tier | Score Range | Count | Description |
 |------|------------|-------|-------------|
-| **Royal Jelly** | ≥ 0.75 | {RJ_COUNT} | Production-ready. Full deed. This ships. |
-| **Honey** | 0.50–0.74 | {HONEY_COUNT} | Usable. Improvable. Never discarded. |
-| **Propolis** | < 0.50 | {PROPOLIS_COUNT} | Intelligence. Reveals issues before production. |
+| **Royal Jelly** | ≥ 0.85 | {RJ_COUNT} | Production-ready. Full deed. This ships. |
+| **Honey** | 0.70–0.84 | {HONEY_COUNT} | Usable. Improvable. Never discarded. |
+| **Propolis** | < 0.70 | {PROPOLIS_COUNT} | Intelligence. Reveals issues before production. |
 
 ### 3.4 Score Distribution
 

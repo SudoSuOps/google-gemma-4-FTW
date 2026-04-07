@@ -43,28 +43,17 @@ logging.basicConfig(
 )
 log = logging.getLogger("deed_recorder")
 
-DB_URL = os.environ.get("DATABASE_URL", "")
+from swarm_config import cfg as swarm_cfg
+
+DB_URL = swarm_cfg.database_url
 NAS_BASE = Path(os.environ.get("NAS_DEEDS_PATH", "/mnt/swarm/datasets"))
 HEDERA_TOPIC = "0.0.10291838"
 
-# Scale models per domain — deed records which scales weighed each pair.
-# Rule: scale must be >= the model that generated the pair.
-DOMAIN_SCALE_IDS = {
-    "grants":       {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "legal":        {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "medical":      {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "cre":          {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "aviation":     {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "self_healing": {"a": "gemma3:12b",  "b": "qwen2.5:7b"},
-    "clawhash":     {"a": "gemma4:31b",  "b": "qwen3.5:27b"},
-    "agenthash":    {"a": "gemma4:31b",  "b": "qwen3.5:27b"},
-}
-
 
 def get_scale_id(domain, scale="a"):
-    """Get the scale model ID for a domain. Used in deed records."""
-    cfg = DOMAIN_SCALE_IDS.get(domain, {"a": "gemma3:12b", "b": "qwen2.5:7b"})
-    return cfg.get(scale, "unknown")
+    """Get the scale model ID for a domain from swarm.yaml."""
+    a_model, b_model = swarm_cfg.get_scales(domain)
+    return a_model if scale == "a" else b_model
 
 # Graceful shutdown
 _running = True

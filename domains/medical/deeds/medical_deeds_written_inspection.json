@@ -1,0 +1,133 @@
+{
+  "stats": {
+    "total": 10,
+    "l1_pass": 10,
+    "l1_fail": 0,
+    "l3_authentic": 2,
+    "l3_boilerplate": 8,
+    "l3_error": 0,
+    "l3_flagged": 8
+  },
+  "results": [
+    {
+      "block_id": "SB-2026-0403-00052",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The Assistant's response lacks specific details such as quantifying the degree of disc bulge and foraminal narrowing.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The Assistant's response lacks specific details such as quantifying the degree of disc bulge and foraminal narrowing.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00210",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"The Assistant correctly identifies and describes findings like disc degeneration, herniated nucleus pulposus, stenosis, and nerve root compression.\"",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"The Assistant correctly identifies and describes findings like disc degeneration, herniated nucleus pulposus, stenosis, and nerve root compression.\"\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00229",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "\"no significant central canal narrowing or foraminal compromise. The central canal is patent without stenosis, and bilateral foramina show no signif\"",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: \"no significant central canal narrowing or foraminal compromise. The central canal is patent without stenosis, and bilateral foramina show no signif\"\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00286",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The Assistant's response lacks specific references to the provided MRI images and does not mention any details from them. Instead of referencing actual findings on L1/L2 or discussing disc herniation at L4/L5 as seen in the original pair, it provides a generic description that could apply broadly.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The Assistant's response lacks specific references to the provided MRI images and does not mention any details from them. Instead of referencing actual findings on L1/L2 or discussing disc herniation at L4/L5 as seen in the original pair, it provides a generic description that could apply broadly.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00458",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning includes generic phrases like \"exceptional quality,\" which do not reference specific content from the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning includes generic phrases like \"exceptional quality,\" which do not reference specific content from the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00502",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The reasoning includes generic phrases like \"exceptional quality,\" which do not reference specific content from the training pair. Additionally, there is no mention of any actual findings or clinical correlations related to this particular MRI image.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The reasoning includes generic phrases like \"exceptional quality,\" which do not reference specific content from the training pair. Additionally, there is no mention of any actual findings or clinical correlations related to this particular MRI image.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-00564",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The verdict and scoring are generic phrases such as \"exceptional quality,\" which do not reference specific content from the training pair.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The verdict and scoring are generic phrases such as \"exceptional quality,\" which do not reference specific content from the training pair.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-01133",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The response lacks specific details such as disc morphology and signal characteristics which were requested in the SYSTEM prompt. It also omits any clinical correlation with patient symptoms.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The response lacks specific details such as disc morphology and signal characteristics which were requested in the SYSTEM prompt. It also omits any clinical correlation with patient symptoms.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-01326",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "AUTHENTIC",
+        "evidence": "\"The Assistant\u2019s response demonstrates a strong understanding of the prompt and delivers a well-structured neuroradiology report.\"",
+        "confidence": "HIGH",
+        "flag": "NO",
+        "raw": "INSPECTION: AUTHENTIC\nEVIDENCE: \"The Assistant\u2019s response demonstrates a strong understanding of the prompt and delivers a well-structured neuroradiology report.\"\nCONFIDENCE: HIGH\nFLAG: NO"
+      }
+    },
+    {
+      "block_id": "SB-2026-0403-01402",
+      "l1": "PASS",
+      "l1_issues": [],
+      "l3": {
+        "inspection": "BOILERPLATE",
+        "evidence": "The Assistant's response lacks specific details regarding the patient's history of degenerative changes mentioned in previous lumbar X-rays.",
+        "confidence": "HIGH",
+        "flag": "YES",
+        "raw": "INSPECTION: BOILERPLATE\nEVIDENCE: The Assistant's response lacks specific details regarding the patient's history of degenerative changes mentioned in previous lumbar X-rays.\nCONFIDENCE: HIGH\nFLAG: YES"
+      }
+    }
+  ]
+}

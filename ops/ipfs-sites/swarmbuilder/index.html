@@ -107,10 +107,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
             </div>
         </div>
         <div class="fs-section">
-            <div class="fs-section-label">Judge Assignment</div>
+            <div class="fs-section-label">Scale Assignment</div>
             <div class="fs-grid">
-                <div class="fs-field"><div class="fs-key">JUDGE A</div><div class="fs-val locked">gemma3:12b — BASE UNMODIFIED</div></div>
-                <div class="fs-field"><div class="fs-key">JUDGE B</div><div class="fs-val locked">qwen2.5:7b — BASE UNMODIFIED</div></div>
+                <div class="fs-field"><div class="fs-key">SCALE A</div><div class="fs-val locked">gemma3:12b — BASE UNMODIFIED</div></div>
+                <div class="fs-field"><div class="fs-key">SCALE B</div><div class="fs-val locked">qwen2.5:32b — BASE UNMODIFIED</div></div>
                 <div class="fs-field"><div class="fs-key">PROTOCOL</div><div class="fs-val locked">2-PASS VALIDATION</div></div>
                 <div class="fs-field"><div class="fs-key">DRIFT THRESHOLD</div><div class="fs-val locked">0.15 MAX</div></div>
             </div>
@@ -118,8 +118,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
         <div class="fs-section">
             <div class="fs-section-label">Hardware Assignment</div>
             <div class="fs-grid">
-                <div class="fs-field"><div class="fs-key">JUDGE A NODE</div><div class="fs-val">swarmrails-gpu1 — RTX PRO 6000 Blackwell 96GB</div></div>
-                <div class="fs-field"><div class="fs-key">JUDGE B NODE</div><div class="fs-val">whale-gpu0 — RTX 3090 24GB</div></div>
+                <div class="fs-field"><div class="fs-key">SCALE A NODE</div><div class="fs-val">swarmrails-gpu1 — RTX PRO 6000 Blackwell 96GB</div></div>
+                <div class="fs-field"><div class="fs-key">SCALE B NODE</div><div class="fs-val">swarmrails-gpu0 — RTX PRO 6000 Blackwell 96GB</div></div>
                 <div class="fs-field"><div class="fs-key">POWER CAP</div><div class="fs-val locked">300W / 350W</div></div>
                 <div class="fs-field"><div class="fs-key">NETWORK</div><div class="fs-val">LAN 192.168.0.x (air-gapped from internet)</div></div>
             </div>
@@ -130,7 +130,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
                 <div class="fs-field"><div class="fs-key">TEMPERATURE</div><div class="fs-val locked">0.1 (frozen)</div></div>
                 <div class="fs-field"><div class="fs-key">MAX TOKENS</div><div class="fs-val locked">200 (frozen)</div></div>
                 <div class="fs-field"><div class="fs-key">PROMPT VERSION</div><div class="fs-val locked">SCORING_PROMPT_v1 (SHA256 hash on file)</div></div>
-                <div class="fs-field"><div class="fs-key">CLASSIFICATION</div><div class="fs-val locked">RJ ≥0.75 · Honey 0.50-0.74 · Propolis &lt;0.50</div></div>
+                <div class="fs-field"><div class="fs-key">CLASSIFICATION</div><div class="fs-val locked">RJ ≥0.85 · Honey 0.70-0.84 · Propolis &lt;0.70</div></div>
             </div>
         </div>
         <div class="fs-section">
@@ -223,7 +223,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text)}
         <div>&nbsp;&nbsp;↓ issued under</div>
         <div><span style="color:var(--accent)">PERMIT</span> PRM-2026-0403-001</div>
         <div>&nbsp;&nbsp;↓ specifies</div>
-        <div><span style="color:var(--green)">JUDGES</span> gemma3:12b (base) + qwen2.5:7b (base)</div>
+        <div><span style="color:var(--green)">SCALES</span> gemma3:12b (base) + qwen2.5:32b (base)</div>
         <div>&nbsp;&nbsp;↓ on</div>
         <div><span style="color:var(--blue)">HARDWARE</span> swarmrails-gpu1 + whale-gpu0</div>
         <div>&nbsp;&nbsp;↓ with</div>

@@ -27,7 +27,7 @@ The "Property" consists of AI training data pairs certified by SwarmTitle under 
 |-------|-------------|
 | **Domain** | {DOMAIN} |
 | **Pair Count** | {PAIR_COUNT} (estimated; final count per Closing Statement) |
-| **Classification** | Royal Jelly (≥ 0.75), Honey (0.50–0.74), Propolis (< 0.50) |
+| **Classification** | Royal Jelly (≥ 0.85), Honey (0.70–0.84), Propolis (< 0.70) |
 | **Format** | JSONL with title deeds |
 | **Certification** | SwarmTitle — dual-judge, 2-pass validated, Hedera-anchored |
 | **Legal Description** | Per SwarmGraph metes and bounds (swarmgraph.eth) |

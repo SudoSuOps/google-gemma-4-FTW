@@ -29,9 +29,19 @@ import os
 import urllib.request
 import hashlib
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+from swarm_config import cfg
+
+DB_URL = cfg.database_url
 DEED_WRITER_ENDPOINT = os.environ.get("DEED_WRITER", "http://localhost:11434")
-DEED_WRITER_MODEL = os.environ.get("DEED_WRITER_MODEL", "gemma3:1b")
+DEED_WRITER_MODEL = os.environ.get("DEED_WRITER_MODEL", cfg.deed_writer_model)
+SCALE_A_MODEL = cfg.scale_a_model
+SCALE_B_MODEL = cfg.scale_b_model
+
+# Standing rule enforced by swarm_config
+if DEED_WRITER_MODEL not in cfg.valid_deed_writers:
+    print(f"[FATAL] Deed writer model '{DEED_WRITER_MODEL}' not in approved list: {cfg.valid_deed_writers}")
+    print("[FATAL] Standing rule: NEVER use models smaller than 12B for deed writing.")
+    raise SystemExit(1)
 
 DEED_SYSTEM_PROMPT = """You are a SwarmTitle deed writer. You are a base model — unmodified, deterministic.
 
@@ -64,8 +74,8 @@ ASSISTANT: {assistant}
 
 === TRIBUNAL SCORES ===
 
-Judge A ({judge_a_model}): {judge_a_score}
-Judge B ({judge_b_model}): {judge_b_score}
+Scale A ({judge_a_model}): {judge_a_score}
+Scale B ({judge_b_model}): {judge_b_score}
 Average: {final_score}
 
 === WRITE THE DEED ===
@@ -79,9 +89,9 @@ REASONING: [2-4 sentences citing specific content from the pair]
 /no_think"""
 
 
-def write_deed(pair_messages, judge_a_score, judge_b_score, final_score,
-               judge_a_model="gemma3:12b", judge_b_model="qwen2.5:7b"):
-    """Have the base model write the deed for a scored pair."""
+def write_deed(pair_messages, scale_a_weight, scale_b_weight, consensus_weight,
+               judge_a_model=None, judge_b_model=None):
+    """Have the base model write the deed for a weighed pair."""
 
     system = next((m["content"] for m in pair_messages if m["role"] == "system"), "")
     user = next((m["content"] for m in pair_messages if m["role"] == "user"), "")
@@ -91,11 +101,11 @@ def write_deed(pair_messages, judge_a_score, judge_b_score, final_score,
         system=system[:1500],
         user=user[:2000],
         assistant=assistant[:3000],
-        judge_a_model=judge_a_model,
-        judge_b_model=judge_b_model,
-        judge_a_score=f"{judge_a_score:.2f}",
-        judge_b_score=f"{judge_b_score:.2f}",
-        final_score=f"{final_score:.2f}",
+        judge_a_model=judge_a_model or SCALE_A_MODEL,
+        judge_b_model=judge_b_model or SCALE_B_MODEL,
+        judge_a_score=f"{scale_a_weight:.2f}",
+        judge_b_score=f"{scale_b_weight:.2f}",
+        final_score=f"{consensus_weight:.2f}",
     )
 
     payload = json.dumps({
@@ -187,7 +197,7 @@ def run_deed_writer(output_dir, limit=None, continuous=False):
     cur = conn.cursor()
 
     os.makedirs(output_dir, exist_ok=True)
-    deed_file = os.path.join(output_dir, "medical_deeds_written.jsonl")
+    deed_file = os.path.join(output_dir, "deeds_written.jsonl")
     pair_file = os.path.join(output_dir, "deed_pairs.jsonl")
 
     total_written = 0
@@ -197,7 +207,7 @@ def run_deed_writer(output_dir, limit=None, continuous=False):
         cur.execute("""
             SELECT b.id, b.pair_id, b.judge_a_score, b.judge_b_score,
                    b.final_score, b.tier, b.judge_a_reasoning, b.judge_b_reasoning,
-                   p.messages, p.fingerprint, b.scored_at
+                   p.messages, p.fingerprint, b.scored_at, b.domain_id
             FROM bin b
             JOIN pairs p ON p.id = b.pair_id
             WHERE b.status = 'scored' AND b.deed_id IS NULL AND b.final_score > 0
@@ -217,7 +227,7 @@ def run_deed_writer(output_dir, limit=None, continuous=False):
         print(f"[deed-writer] Writing {len(rows)} deeds with {DEED_WRITER_MODEL}...")
 
         for row in rows:
-            bin_id, pair_id, ja_score, jb_score, final_score, tier, ja_reason, jb_reason, messages, fingerprint, scored_at = row
+            bin_id, pair_id, ja_score, jb_score, final_score, tier, ja_reason, jb_reason, messages, fingerprint, scored_at, domain_id = row
             block_id = f"SB-2026-0403-{bin_id:05d}"
 
             try:
@@ -230,15 +240,15 @@ def run_deed_writer(output_dir, limit=None, continuous=False):
                 deed_record = {
                     "block_id": block_id,
                     "pair_index": bin_id,
-                    "domain": "medical",
+                    "domain": domain_id,
                     "status": "verified",
                     "verdict": deed["verdict"],
                     "score": deed["score"],
                     "classification": deed["classification"],
                     "judge_reasoning": deed["judge_reasoning"],
                     "ledger_record": {
-                        "judge_a": {"model": "gemma3:12b", "score": float(ja_score)},
-                        "judge_b": {"model": "qwen2.5:7b", "score": float(jb_score)},
+                        "scale_a": {"model": SCALE_A_MODEL, "weight": float(ja_score)},
+                        "scale_b": {"model": SCALE_B_MODEL, "weight": float(jb_score)},
                         "final_score": float(final_score),
                         "tier": tier,
                         "deed_writer": DEED_WRITER_MODEL,
@@ -287,8 +297,9 @@ if __name__ == "__main__":
     parser.add_argument("--output", default="domains/medical/deeds/", help="Output directory")
     parser.add_argument("--limit", type=int, help="Limit deeds to write per batch")
     parser.add_argument("--continuous", action="store_true", help="Run continuously")
-    parser.add_argument("--model", default="gemma3:1b", help="Deed writer model")
+    parser.add_argument("--model", default=None, help="Deed writer model (overrides DEED_WRITER_MODEL env)")
     args = parser.parse_args()
 
-    DEED_WRITER_MODEL = args.model
+    if args.model:
+        DEED_WRITER_MODEL = args.model
     run_deed_writer(args.output, args.limit, args.continuous)

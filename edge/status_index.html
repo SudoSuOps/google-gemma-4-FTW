@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swarm Status — Fleet Health Monitor</title>
+<style>
+:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono','Fira Code',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{position:fixed;top:0;width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.nav-logo{font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700}
+.nav-status{font-size:11px}
+.main{max-width:800px;margin:0 auto;padding:72px 20px 40px}
+h1{font-size:20px;margin-bottom:4px}
+.subtitle{color:var(--dim);font-size:11px;margin-bottom:24px}
+.status-banner{padding:16px 20px;border:1px solid;margin-bottom:24px;font-size:14px;font-weight:700;text-align:center;letter-spacing:2px}
+.banner-ok{color:var(--green);border-color:var(--green);background:rgba(34,197,94,0.05)}
+.banner-fail{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.05)}
+.check-group{margin-bottom:20px}
+.group-label{font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.check-row{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);gap:12px;font-size:11px}
+.check-icon{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.check-ok{background:var(--green)}
+.check-fail{background:var(--red)}
+.check-name{min-width:140px;color:var(--text)}
+.check-latency{color:var(--dim);min-width:60px;text-align:right}
+.check-detail{color:var(--dim);flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.timestamp{color:var(--dim);font-size:10px;text-align:center;margin-top:20px}
+.auto-refresh{color:var(--accent);font-size:9px;text-align:center}
+</style>
+</head>
+<body>
+<div class="nav">
+    <div class="nav-logo">SWARM STATUS</div>
+    <div class="nav-status" id="nav-status"></div>
+</div>
+<div class="main">
+    <h1>Fleet Health Monitor</h1>
+    <div class="subtitle">Auto-refreshes every 30 seconds. Watchdog checks every 5 minutes.</div>
+    <div id="status-banner" class="status-banner banner-ok">LOADING...</div>
+    <div id="checks"></div>
+    <div class="timestamp" id="timestamp"></div>
+    <div class="auto-refresh">Auto-refreshing every 30s</div>
+</div>
+<script>
+const groups = {
+    "Web Routes": ["site_main","deed_ui","deed_api","chain_ui","chain_api","shop_ui","shop_api","graph_ui"],
+    "Database": ["postgresql"],
+    "Services": ["deed_recorder"],
+    "Infrastructure": ["nas_mount","swarmrails","whale"],
+    "GPU / Training": ["gpu_training"],
+};
+const labels = {
+    site_main:"swarmandbee.ai",deed_ui:"/deed/ UI",deed_api:"/deed/api",chain_ui:"/chain/ UI",
+    chain_api:"/chain/api",shop_ui:"/shop/ UI",shop_api:"/shop/api",graph_ui:"/graph/ UI",
+    postgresql:"PostgreSQL (NAS)",deed_recorder:"Deed Recorder (edge)",
+    nas_mount:"NAS Mount (/mnt/swarm)",swarmrails:"SwarmRails SSH",whale:"Whale SSH",
+    gpu_training:"GPU Training",
+};
+
+async function load(){
+    try{
+        const r=await fetch('/status/api/health');
+        const d=await r.json();
+        render(d);
+    }catch(e){
+        document.getElementById('status-banner').textContent='CANNOT REACH WATCHDOG';
+        document.getElementById('status-banner').className='status-banner banner-fail';
+    }
+}
+
+function render(data){
+    const s=data.summary;
+    const banner=document.getElementById('status-banner');
+    if(s.failed===0){
+        banner.textContent=`ALL SYSTEMS GO — ${s.passed}/${s.total}`;
+        banner.className='status-banner banner-ok';
+    }else{
+        banner.textContent=`${s.failed} FAILURE${s.failed>1?'S':''} — ${s.passed}/${s.total}`;
+        banner.className='status-banner banner-fail';
+    }
+    document.getElementById('nav-status').innerHTML=s.failed===0?
+        '<span style="color:var(--green)">● ALL OK</span>':
+        `<span style="color:var(--red)">● ${s.failed} FAIL</span>`;
+
+    let html='';
+    for(const[group,keys]of Object.entries(groups)){
+        html+=`<div class="check-group"><div class="group-label">${group}</div>`;
+        for(const key of keys){
+            const c=data.checks[key];
+            if(!c)continue;
+            const ok=c.ok;
+            const icon=ok?'check-ok':'check-fail';
+            const name=labels[key]||key;
+            const ms=c.latency_ms?`${c.latency_ms}ms`:'';
+            let detail='';
+            if(key==='postgresql'&&c.deeds)detail=`${c.deeds.toLocaleString()} deeds | ${c.remaining||0} remaining`;
+            else if(key==='gpu_training'){
+                const g=(c.gpus||[]);
+                detail=g.map(x=>`GPU${x.gpu}:${x.temp}°C ${x.power}W ${x.util}%`).join(' | ');
+                if(c.training)detail+=` | cook: ${c.training}`;
+            }else if(typeof c.detail==='string')detail=c.detail;
+            html+=`<div class="check-row">
+                <div class="check-icon ${icon}"></div>
+                <div class="check-name">${name}</div>
+                <div class="check-latency">${ms}</div>
+                <div class="check-detail">${detail}</div>
+            </div>`;
+        }
+        html+=`</div>`;
+    }
+    document.getElementById('checks').innerHTML=html;
+    document.getElementById('timestamp').textContent=`Last check: ${data.timestamp.replace('T',' ').slice(0,19)} UTC`;
+}
+
+load();
+setInterval(load,30000);
+</script>
+</body>
+</html>

@@ -41,7 +41,7 @@ Client selects two independent base models for the tribunal:
 | **Judge B** | {JUDGE_B_MODEL} | Base — unmodified | {SELECTED_BY} |
 
 **Protocol:** SwarmProtocol v1.0 — 2-pass validation, drift threshold ≤ 0.15
-**Classification:** Royal Jelly ≥ 0.75 | Honey 0.50–0.74 | Propolis < 0.50
+**Classification:** Royal Jelly ≥ 0.85 | Honey 0.70–0.84 | Propolis < 0.70
 
 ---
 

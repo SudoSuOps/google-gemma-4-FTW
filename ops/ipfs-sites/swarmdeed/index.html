@@ -3,189 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SwarmDeed — Deed Verification Office</title>
+<title>SwarmDeed — County Recorder's Office</title>
 <style>
-:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif}
+:root{--bg:#04040a;--card:#090912;--border:#141420;--text:#c8c8d0;--dim:#505068;--accent:#d4a017;--green:#22c55e;--red:#ef4444;--blue:#4a9eff;--mono:'SF Mono','JetBrains Mono','Fira Code',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
-
-.nav{width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:fixed;z-index:100}
-.nav-logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:3px;font-weight:700}
-.nav-sub{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:2px}
-
-.main{max-width:700px;width:100%;padding:100px 24px 60px}
-
-h1{font-size:28px;font-weight:700;text-align:center;margin-bottom:4px}
-h1 span{color:var(--accent)}
-.subtitle{text-align:center;color:var(--dim);font-size:13px;margin-bottom:40px}
-
-/* SEARCH */
-.search-wrap{margin-bottom:40px}
-.search-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
-.search-box{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px 16px;font-family:var(--mono);font-size:14px;outline:none;letter-spacing:1px}
-.search-box:focus{border-color:var(--accent)}
-.search-box::placeholder{color:var(--dim)}
-.search-hint{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:6px}
-
-/* RESULT */
-.result{display:none}
-.result.visible{display:block}
-
-.deed-card{background:var(--card);border:1px solid var(--border);margin-bottom:16px}
-.deed-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.deed-id{font-family:var(--mono);font-size:14px;font-weight:700}
-.deed-tier{font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:4px 12px}
-.tier-rj{color:var(--accent);border:1px solid var(--accent)}
-.tier-ho{color:#a88a14;border:1px solid #a88a14}
-.tier-pr{color:var(--dim);border:1px solid var(--dim)}
-
-.deed-body{padding:20px 24px}
-.deed-row{display:flex;padding:6px 0;border-bottom:1px solid rgba(20,20,32,0.8)}
-.deed-key{font-family:var(--mono);font-size:10px;color:var(--dim);min-width:100px;letter-spacing:1px}
-.deed-val{font-family:var(--mono);font-size:11px;color:var(--text);flex:1}
-
-/* PROOFS */
-.proofs{margin-top:16px}
-.proof-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.proof-check{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
-.proof-pass{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid var(--green)}
-.proof-pend{background:rgba(80,80,104,0.15);color:var(--dim);border:1px solid var(--dim)}
-.proof-fail{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid var(--red)}
-.proof-label{font-family:var(--mono);font-size:10px;color:var(--dim);min-width:80px;letter-spacing:1px}
-.proof-detail{font-size:11px;color:var(--text);flex:1}
-.proof-status{font-family:var(--mono);font-size:9px;letter-spacing:1px}
-
-/* VERIFY STRIP */
-.verify-strip{background:var(--card);border:1px solid var(--border);padding:16px 24px;margin-top:16px;text-align:center}
-.verify-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--accent);margin-bottom:8px}
-.verify-result{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:2px}
-.verified{color:var(--green)}
-.pending{color:var(--dim)}
-.failed{color:var(--red)}
-
-/* INFO */
-.info-section{margin-top:48px}
-.info-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
-.info-card{background:var(--card);border:1px solid var(--border);padding:20px 24px;margin-bottom:12px}
-.info-q{font-weight:600;font-size:13px;margin-bottom:6px}
-.info-a{font-size:12px;color:var(--dim);line-height:1.7}
-.info-a code{color:var(--text);background:var(--bg);padding:2px 6px;font-family:var(--mono);font-size:11px}
-
-.footer{width:100%;text-align:center;padding:40px 24px;font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:1px;border-top:1px solid var(--border);margin-top:60px}
-.footer a{color:var(--accent);text-decoration:none}
-
-@media(max-width:600px){.deed-header{flex-direction:column;gap:8px}.deed-row{flex-direction:column;gap:2px}}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{position:fixed;top:0;width:100%;background:rgba(4,4,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.nav-logo{font-size:12px;color:var(--accent);letter-spacing:3px;font-weight:700}
+.nav-stats{display:flex;gap:20px;font-size:10px}
+.nav-stats .v{color:var(--text);font-weight:600}
+.nav-stats .l{color:var(--dim);margin-left:3px}
+.main{max-width:960px;margin:0 auto;padding:64px 20px 40px}
+.terminal{background:var(--card);border:1px solid var(--border);margin-bottom:16px}
+.terminal-bar{background:rgba(20,20,32,0.8);border-bottom:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.terminal-title{font-size:9px;color:var(--dim);margin-left:8px;letter-spacing:2px}
+.terminal-body{padding:16px;min-height:200px;max-height:70vh;overflow-y:auto;font-size:12px;line-height:1.8}
+.terminal-body .line{white-space:pre-wrap;word-break:break-all}
+.prompt{color:var(--accent)}.cmd{color:var(--green)}.err{color:var(--red)}.info{color:var(--blue)}.dim{color:var(--dim)}
+.rj{color:var(--accent);font-weight:700}.ho{color:#a88a14}.pr{color:var(--dim)}.green{color:var(--green)}
+.input-row{display:flex;align-items:center;border-top:1px solid var(--border);padding:10px 16px;gap:8px}
+.input-prompt{color:var(--accent);font-size:12px;flex-shrink:0}
+.input-box{flex:1;background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:12px;outline:none}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.quick a{font-size:10px;color:var(--accent);border:1px solid var(--border);padding:4px 10px;text-decoration:none;cursor:pointer}
+.quick a:hover{border-color:var(--accent);background:rgba(212,160,23,0.1)}
+@media(max-width:600px){.nav-stats{display:none}.main{padding:56px 10px 20px}.terminal-body{font-size:11px;max-height:60vh}}
 </style>
 </head>
 <body>
-
 <div class="nav">
     <div class="nav-logo">SWARMDEED</div>
-    <div class="nav-sub">DEED VERIFICATION OFFICE</div>
+    <div class="nav-stats" id="nav-stats"></div>
 </div>
-
 <div class="main">
-    <h1>Verify a <span>Deed</span></h1>
-    <p class="subtitle">Enter a block ID to verify its five proofs. Independent. Deterministic. Permanent.</p>
-
-    <div class="search-wrap">
-        <div class="search-label">Block ID or Fingerprint</div>
-        <input class="search-box" id="search" placeholder="SB-2026-0403-00001" autofocus>
-        <div class="search-hint">Enter a deed block ID to verify. Example: SB-2026-0403-00847</div>
+    <div class="quick">
+        <a onclick="exec('help')">help</a>
+        <a onclick="exec('stats')">stats</a>
+        <a onclick="exec('domains')">domains</a>
+        <a onclick="exec('recent 10')">recent</a>
+        <a onclick="exec('search royal-jelly')">royal jelly</a>
+        <a onclick="exec('batches')">batches</a>
+        <a onclick="exec('finality')">finality</a>
+        <a onclick="exec('top 10')">top 10</a>
     </div>
-
-    <!-- DEMO RESULT -->
-    <div class="result visible" id="result">
-        <div class="deed-card">
-            <div class="deed-header">
-                <div class="deed-id" id="r-block">SB-2026-0403-00847</div>
-                <div class="deed-tier tier-rj" id="r-tier">ROYAL JELLY</div>
-            </div>
-            <div class="deed-body">
-                <div class="deed-row"><div class="deed-key">SCORE</div><div class="deed-val" id="r-score" style="color:var(--accent);font-weight:700">0.91</div></div>
-                <div class="deed-row"><div class="deed-key">DOMAIN</div><div class="deed-val" id="r-domain">Commercial Real Estate</div></div>
-                <div class="deed-row"><div class="deed-key">SEALED</div><div class="deed-val" id="r-sealed">2026-04-03 14:22:08 UTC</div></div>
-
-                <div class="proofs">
-                    <div class="proof-row">
-                        <div class="proof-check proof-pass">&#10003;</div>
-                        <div class="proof-label">ORIGIN</div>
-                        <div class="proof-detail">RTX PRO 6000 Blackwell · swarmrails-gpu0 · domain_expert_qa</div>
-                        <div class="proof-status" style="color:var(--green)">VERIFIED</div>
-                    </div>
-                    <div class="proof-row">
-                        <div class="proof-check proof-pass">&#10003;</div>
-                        <div class="proof-label">QUALITY</div>
-                        <div class="proof-detail">Judge A: Gemma-3-12B (0.89) · Judge B: Qwen-2.5-7B (0.93) · Drift: 0.02</div>
-                        <div class="proof-status" style="color:var(--green)">VERIFIED</div>
-                    </div>
-                    <div class="proof-row">
-                        <div class="proof-check proof-pass">&#10003;</div>
-                        <div class="proof-label">PROCESS</div>
-                        <div class="proof-detail">1 attempt · 4,200ms · 2-pass validated · Drift within tolerance</div>
-                        <div class="proof-status" style="color:var(--green)">VERIFIED</div>
-                    </div>
-                    <div class="proof-row">
-                        <div class="proof-check proof-pass">&#10003;</div>
-                        <div class="proof-label">ECONOMICS</div>
-                        <div class="proof-detail">$0.005 · 1,260 J · Trend: stable</div>
-                        <div class="proof-status" style="color:var(--green)">VERIFIED</div>
-                    </div>
-                    <div class="proof-row">
-                        <div class="proof-check proof-pend">&#8230;</div>
-                        <div class="proof-label">TRUST</div>
-                        <div class="proof-detail">Merkle: a3f8c1d9...62f0 · Hedera: 0.0.10291838</div>
-                        <div class="proof-status" style="color:var(--dim)">PENDING</div>
-                    </div>
-                </div>
-            </div>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="dot" style="background:var(--red)"></div>
+            <div class="dot" style="background:var(--accent)"></div>
+            <div class="dot" style="background:var(--green)"></div>
+            <span class="terminal-title">SWARMDEED COUNTY RECORDER — TERMINAL</span>
         </div>
-
-        <div class="verify-strip">
-            <div class="verify-label">DEED VERDICT</div>
-            <div class="verify-result verified">3 VERIFIED · 0 FAILED · 2 PENDING</div>
-        </div>
-
-        <div class="verify-strip" style="margin-top:8px">
-            <div class="verify-label">INDEPENDENT VERIFICATION</div>
-            <div style="font-family:var(--mono);font-size:11px;color:var(--dim);line-height:2">
-                <div>Score: <code style="color:var(--text);background:var(--bg);padding:2px 6px;font-size:10px">Run judge function → deterministic</code></div>
-                <div>Merkle: <code style="color:var(--text);background:var(--bg);padding:2px 6px;font-size:10px">Recompute SHA256 tree → immutable</code></div>
-                <div>Anchor: <a href="https://hashscan.io/mainnet/topic/0.0.10291838" target="_blank" style="color:var(--accent);text-decoration:none;font-size:10px">Verify on Hedera → public, permanent</a></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WHAT IS A DEED -->
-    <div class="info-section">
-        <div class="info-title">What is a Deed?</div>
-        <div class="info-card">
-            <div class="info-q">A title deed for AI training data.</div>
-            <div class="info-a">Every training pair scored by the Swarm & Bee tribunal receives a deed — a formal record with five independently verifiable proofs. Without a deed, it's a JSONL file. With a deed, it's a defendable asset.</div>
-        </div>
-        <div class="info-card">
-            <div class="info-q">Who validates the validator?</div>
-            <div class="info-a">
-                <code>"Your scores are wrong."</code> → Run the scoring function yourself. Deterministic.<br>
-                <code>"Your data was tampered."</code> → Recompute the Merkle tree. Immutable.<br>
-                <code>"Your timestamp is fake."</code> → Hedera aBFT consensus. Public. Permanent.
-            </div>
-        </div>
-        <div class="info-card">
-            <div class="info-q">What makes a deed final?</div>
-            <div class="info-a">Five layers of separation: PostgreSQL (query copy) → MinIO (versioned archive) → IPFS (distributed) → Hedera (consensus timestamp) → swarmdeed.eth (permanent URL). Each layer is independently verifiable. The deed survives even if Swarm & Bee disappears.</div>
+        <div class="terminal-body" id="output"></div>
+        <div class="input-row">
+            <span class="input-prompt">deed&gt;</span>
+            <input class="input-box" id="input" placeholder="Type a command... (try 'help')" autofocus>
         </div>
     </div>
 </div>
+<script>
+let DB=null;const $=id=>document.getElementById(id),out=$('output'),inp=$('input');
+function print(h){out.innerHTML+=`<div class="line">${h}</div>`}
+function br(){print('')}
+function scroll(){out.scrollTop=out.scrollHeight}
+function tc(t){t=(t||'').replace('_','-');return t==='royal-jelly'?'rj':t==='honey'?'ho':'pr'}
+function tl(t){t=(t||'').replace('_','-');return t==='royal-jelly'?'ROYAL JELLY':t==='honey'?'HONEY':'PROPOLIS'}
 
-<div class="footer">
-    SWARM & BEE LLC — DEED VERIFICATION OFFICE<br><br>
-    <a href="https://swarmshop.eth.limo">Shop</a> &nbsp;·&nbsp;
-    <a href="https://swarmgraph.eth.limo">Graph</a> &nbsp;·&nbsp;
-    <a href="https://hashscan.io/mainnet/topic/0.0.10291838">Hedera</a> &nbsp;·&nbsp;
-    <a href="https://swarmandbee.ai">swarmandbee.ai</a> &nbsp;·&nbsp;
-    <a href="mailto:build@swarmandbee.ai">build@swarmandbee.ai</a>
-</div>
+function cmdHelp(){
+print('<span class="info">SwarmDeed County Recorder — Command Reference</span>');br();
+print('  <span class="cmd">stats</span>              Overview: totals, tiers, scores');
+print('  <span class="cmd">domains</span>            List all domains with deed counts');
+print('  <span class="cmd">recent [n]</span>         Show last N deeds (default 10)');
+print('  <span class="cmd">search &lt;query&gt;</span>     Search by ID, domain, tier, or text in pair');
+print('  <span class="cmd">deed &lt;id&gt;</span>         Full deed record with all 5 proofs');
+print('  <span class="cmd">batches</span>            List all Merkle batches');
+print('  <span class="cmd">tier &lt;name&gt;</span>       Filter: royal-jelly, honey, propolis');
+print('  <span class="cmd">finality</span>           5-layer pipeline status');
+print('  <span class="cmd">top [n]</span>            Highest scoring deeds');
+print('  <span class="cmd">bottom [n]</span>         Lowest scoring deeds');
+print('  <span class="cmd">clear</span>              Clear terminal');
+}
 
+function cmdStats(){
+const s=DB.stats;
+print('<span class="info">═══ DEED REGISTRY ═══</span>');br();
+print(`  Total deeds:     <span class="rj">${s.total.toLocaleString()}</span>`);
+print(`  Merkle batches:  ${s.batches}`);
+print(`  Pending in bin:  ${s.remaining_in_bin.toLocaleString()}`);br();
+print('  <span class="dim">── TIERS ──</span>');
+for(const[t,c]of Object.entries(s.tiers)){const p=(c/s.total*100).toFixed(1);print(`  <span class="${tc(t)}">${tl(t).padEnd(14)}</span> ${c.toLocaleString().padStart(6)} (${p}%)`)}
+br();print('  <span class="dim">── SCORES ──</span>');
+print(`  Average:  ${s.avg_score.toFixed(4)}`);
+print(`  Highest:  ${s.max_score.toFixed(4)}`);
+print(`  Lowest:   ${s.min_score.toFixed(4)}`);
+br();print(`  <span class="dim">Exported: ${DB.exported_at}</span>`);
+}
+
+function cmdDomains(){
+print('<span class="info">═══ DOMAINS ═══</span>');br();
+for(const[d,c]of Object.entries(DB.stats.domains)){
+const ds=DB.deeds.filter(x=>x.domain===d);
+const rj=ds.filter(x=>x.tier==='royal-jelly').length,ho=ds.filter(x=>x.tier==='honey').length,pr=ds.filter(x=>x.tier==='propolis').length;
+print(`  <span class="cmd">${d.padEnd(15)}</span> ${String(c).padStart(5)} deeds  |  <span class="rj">RJ:${rj}</span>  <span class="ho">H:${ho}</span>  <span class="pr">P:${pr}</span>`);
+}}
+
+function cmdRecent(n){
+n=parseInt(n)||10;const r=DB.deeds.slice(-n).reverse();
+print(`<span class="info">═══ LAST ${n} DEEDS ═══</span>`);br();
+for(const d of r)deedLine(d);
+}
+
+function cmdDeed(id){
+if(!id){print('<span class="err">Usage: deed &lt;deed_id&gt;</span>');return}
+const d=DB.deeds.find(x=>x.deed_id===id||x.deed_id.includes(id));
+if(!d){print(`<span class="err">Deed not found: ${id}</span>`);return}
+const c=tc(d.tier);
+print(`<span class="info">═══ DEED: ${d.deed_id} ═══</span>`);br();
+print(`  ID:            <span class="${c}">${d.deed_id}</span>`);
+print(`  Domain:        ${d.domain}`);
+print(`  Tier:          <span class="${c}">${tl(d.tier)}</span>`);
+print(`  Final Score:   <span class="${c}">${(d.final_score||0).toFixed(4)}</span>`);
+print(`  Fingerprint:   ${d.fingerprint||'—'}`);
+print(`  Pair Size:     ${d.char_count?d.char_count.toLocaleString()+' chars':'—'}`);
+print(`  Sealed:        ${(d.sealed_at||'').replace('T',' ').slice(0,19)}`);
+print(`  Validated:     ${d.validated?'<span class="green">YES</span>':'<span class="err">NO</span>'}`);
+br();print('  <span class="dim">── DUAL JUDGE SCORES ──</span>');
+print(`  Judge A:       ${d.judge_a} → <span class="${c}">${(d.score_a||0).toFixed(4)}</span>`);
+if(d.reasoning_a)print(`                 <span class="dim">${d.reasoning_a.slice(0,200)}</span>`);
+print(`  Judge B:       ${d.judge_b} → <span class="${c}">${(d.score_b||0).toFixed(4)}</span>`);
+if(d.reasoning_b)print(`                 <span class="dim">${d.reasoning_b.slice(0,200)}</span>`);
+print(`  Max Drift:     ${d.max_drift!=null?d.max_drift.toFixed(4):'—'}`);
+br();print('  <span class="dim">── PAIR PREVIEW ──</span>');
+if(d.system_preview)print(`  [system]       <span class="dim">${d.system_preview.slice(0,120)}</span>`);
+if(d.user_preview)print(`  [user]         ${d.user_preview.slice(0,200)}`);
+if(d.assistant_preview)print(`  [assistant]    ${d.assistant_preview.slice(0,200)}`);
+br();print('  <span class="dim">── FIVE PROOFS OF FINALITY ──</span>');
+const proofs=[
+[!!d.domain,'01 Origin',d.domain],
+[d.score_a!=null&&d.score_b!=null,'02 Quality',`A:${(d.score_a||0).toFixed(2)} B:${(d.score_b||0).toFixed(2)} → ${(d.final_score||0).toFixed(2)}`],
+[!!d.sealed_at,'03 Process','sealed '+((d.sealed_at||'').slice(0,10))],
+[false,'04 Economics','pending'],
+[!!d.merkle_root,'05 Trust',d.merkle_root?d.merkle_root.slice(0,24)+'...':'no batch yet'],
+];
+for(const[ok,name,detail]of proofs)print(`  ${ok?'<span class="green">■</span>':'<span class="dim">□</span>'} ${name.padEnd(15)} ${detail}`);
+if(d.batch_id){br();print(`  Batch:         ${d.batch_id}`);print(`  Merkle Root:   ${(d.merkle_root||'').slice(0,40)}...`);print(`  Leaf Index:    ${d.merkle_leaf_idx}`)}
+}
+
+function cmdSearch(q){
+if(!q){print('<span class="err">Usage: search &lt;query&gt;</span>');return}
+q=q.toLowerCase();
+const r=DB.deeds.filter(d=>d.deed_id.toLowerCase().includes(q)||d.domain.toLowerCase().includes(q)||d.tier.toLowerCase().includes(q)||(d.user_preview||'').toLowerCase().includes(q)||(d.assistant_preview||'').toLowerCase().includes(q)||(d.reasoning_a||'').toLowerCase().includes(q)||(d.fingerprint||'').toLowerCase().includes(q));
+print(`<span class="info">═══ SEARCH: "${q}" — ${r.length} results ═══</span>`);br();
+for(const d of r.slice(0,25))deedLine(d);
+if(r.length>25)print(`<span class="dim">  ... and ${r.length-25} more</span>`);
+}
+
+function cmdTier(t){
+if(!t){print('<span class="err">Usage: tier &lt;royal-jelly|honey|propolis&gt;</span>');return}
+t=t.toLowerCase().replace('_','-');const r=DB.deeds.filter(d=>d.tier===t);
+print(`<span class="info">═══ ${tl(t)} — ${r.length} deeds ═══</span>`);br();
+for(const d of r.slice(0,20))deedLine(d);
+if(r.length>20)print(`<span class="dim">  ... ${r.length-20} more</span>`);
+}
+
+function cmdBatches(){
+const b={};for(const d of DB.deeds)if(d.batch_id){if(!b[d.batch_id])b[d.batch_id]={n:0,root:d.merkle_root,dom:d.domain};b[d.batch_id].n++}
+print(`<span class="info">═══ MERKLE BATCHES — ${Object.keys(b).length} ═══</span>`);br();
+for(const[id,v]of Object.entries(b))print(`  <span class="cmd">${id}</span>  ${String(v.n).padStart(3)} leaves  root:<span class="dim">${(v.root||'').slice(0,16)}...</span>  ${v.dom}`);
+const u=DB.deeds.filter(d=>!d.batch_id).length;
+if(u>0)print(`<br>  <span class="dim">${u} deeds awaiting batch</span>`);
+}
+
+function cmdFinality(){
+const s=DB.stats;
+print('<span class="info">═══ FINALITY PIPELINE ═══</span>');br();
+print(`  <span class="green">■</span> L1 PostgreSQL    ${s.total.toLocaleString()} deeds filed`);
+print(`  <span class="green">■</span> L2 Merkle         ${s.batches} batches sealed`);
+print(`  <span class="dim">□</span> L3 IPFS           not yet wired`);
+print(`  <span class="dim">□</span> L4 Hedera         topic: ${DB.hedera_topic}`);
+print(`  <span class="green">■</span> L5 ENS            swarmdeed.eth`);
+br();
+const pct=((s.total/(s.total+s.remaining_in_bin))*100).toFixed(1);
+const bar='█'.repeat(Math.round(pct/5))+'░'.repeat(20-Math.round(pct/5));
+print(`  Filing: [${bar}] ${pct}%`);
+print(`  <span class="dim">${s.remaining_in_bin.toLocaleString()} pairs still in tribunal queue</span>`);
+}
+
+function cmdTop(n){n=parseInt(n)||10;const r=[...DB.deeds].sort((a,b)=>(b.final_score||0)-(a.final_score||0)).slice(0,n);print(`<span class="info">═══ TOP ${n} ═══</span>`);br();for(const d of r)deedLine(d)}
+function cmdBottom(n){n=parseInt(n)||10;const r=[...DB.deeds].sort((a,b)=>(a.final_score||0)-(b.final_score||0)).slice(0,n);print(`<span class="info">═══ BOTTOM ${n} ═══</span>`);br();for(const d of r)deedLine(d)}
+
+function deedLine(d){
+const s=(d.final_score||0).toFixed(3),c=tc(d.tier),t=(d.sealed_at||'').slice(0,19).replace('T',' '),b=d.batch_id?'✓':'·';
+print(`  <span class="${c}">${d.deed_id.padEnd(22)}</span> <span class="${c}">${s}</span>  ${d.domain.padEnd(10)} ${b}  <span class="dim">${t}</span>`);
+}
+
+function exec(raw){
+const p=raw.trim().split(/\s+/),cmd=p[0].toLowerCase(),arg=p.slice(1).join(' ');
+print(`<span class="prompt">deed&gt;</span> <span class="cmd">${raw}</span>`);br();
+switch(cmd){
+case'help':cmdHelp();break;case'stats':cmdStats();break;case'domains':cmdDomains();break;
+case'recent':cmdRecent(arg);break;case'deed':cmdDeed(arg);break;case'search':cmdSearch(arg);break;
+case'tier':cmdTier(arg);break;case'batches':cmdBatches();break;case'finality':cmdFinality();break;
+case'top':cmdTop(arg);break;case'bottom':cmdBottom(arg);break;case'clear':out.innerHTML='';break;
+default:print(`<span class="err">Unknown: ${cmd}. Type 'help'.</span>`)}
+br();scroll();
+}
+
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){exec(inp.value.trim());inp.value=''}});
+
+async function init(){
+print('<span class="dim">Loading deed registry...</span>');
+try{
+const r=await fetch('deeds.json');if(!r.ok)throw new Error(`HTTP ${r.status}`);
+DB=await r.json();out.innerHTML='';
+const s=DB.stats;
+$('nav-stats').innerHTML=`<span><span class="v">${s.total.toLocaleString()}</span><span class="l">deeds</span></span><span><span class="v">${s.batches}</span><span class="l">batches</span></span><span><span class="v">${(s.tiers['royal-jelly']||0).toLocaleString()}</span><span class="l">royal jelly</span></span><span><span class="v">${s.remaining_in_bin.toLocaleString()}</span><span class="l">pending</span></span>`;
+print('<span class="rj">╔══════════════════════════════════════════════════════╗</span>');
+print('<span class="rj">║   SWARMDEED — COUNTY RECORDER\'S OFFICE               ║</span>');
+print('<span class="rj">║   Every deed. Every score. Every proof.              ║</span>');
+print('<span class="rj">╚══════════════════════════════════════════════════════╝</span>');br();
+print(`  Registry: <span class="rj">${s.total.toLocaleString()}</span> deeds across ${Object.keys(s.domains).length} domains`);
+print(`  Batches:  ${s.batches} Merkle trees sealed`);
+print(`  Quality:  ${(s.tiers['royal-jelly']||0).toLocaleString()} Royal Jelly (${((s.tiers['royal-jelly']||0)/s.total*100).toFixed(1)}%)`);
+print(`  Pending:  ${s.remaining_in_bin.toLocaleString()} pairs in tribunal`);br();
+print('  Type <span class="cmd">help</span> for commands, <span class="cmd">stats</span> for overview');
+print('  Type <span class="cmd">deed SB-2026-0403-00001</span> to inspect a specific deed');
+print('  Type <span class="cmd">search lumbar</span> to find deeds by content');
+}catch(e){print(`<span class="err">Failed to load: ${e.message}</span>`);print('<span class="dim">Export deeds.json with export_ledger.py</span>')}
+br();scroll();
+}
+init();
+</script>
 </body>
 </html>

@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: swarmgraph-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: swarmgraph
+      POSTGRES_USER: swarm
+      POSTGRES_PASSWORD: ${SWARMGRAPH_DB_PASS:-swarmandbee2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - /data1/swarmgraph-db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./views.sql:/docker-entrypoint-initdb.d/02-views.sql:ro
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=4GB"
+      - "-c"
+      - "effective_cache_size=16GB"
+      - "-c"
+      - "work_mem=256MB"
+      - "-c"
+      - "maintenance_work_mem=1GB"
+      - "-c"
+      - "max_connections=100"
+      - "-c"
+      - "log_min_duration_statement=1000"
+    networks:
+      - swarmnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swarm -d swarmgraph"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: swarmgraph-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://swarm:${SWARMGRAPH_DB_PASS:-swarmandbee2026}@postgres:5432/swarmgraph
+    ports:
+      - "9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - swarmnet
+
+networks:
+  swarmnet:
+    driver: bridge

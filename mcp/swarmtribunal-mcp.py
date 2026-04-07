@@ -27,7 +27,7 @@ from pathlib import Path
 # MCP protocol implementation
 # Uses JSON-RPC 2.0 over stdio (standard MCP transport)
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+DB_URL = os.environ.get("DATABASE_URL", "")
 JUDGE_A = os.environ.get("JUDGE_A", "http://localhost:11434")
 JUDGE_B = os.environ.get("JUDGE_B", "http://192.168.0.99:11434")
 
@@ -187,7 +187,7 @@ def handle_score_pairs(params):
             "domain": domain,
             "judges": {
                 "judge_a": "gemma3:12b (base, unmodified)",
-                "judge_b": "qwen2.5:7b (base, unmodified)"
+                "judge_b": "gemma3:12b (base, unmodified)"
             },
             "protocol": "2-pass validation (validate the validator)",
             "status": "queued",

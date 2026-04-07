@@ -2,20 +2,20 @@
 """
 SwarmChain Bin — The Pair Queue
 ================================
-Pairs go IN the bin. Judges pull FROM the bin. Deeds come OUT.
+Pairs go IN the bin. Scales weigh FROM the bin. Deeds come OUT.
 
 The bin is a PostgreSQL-backed queue with states:
   QUEUED   → pair is waiting for tribunal
-  JUDGING  → pair is being scored (locked by a judge worker)
-  SCORED   → both judges scored, 2-pass validated
+  JUDGING  → pair is being weighed (locked by a scale worker)
+  SCORED   → both scales weighed, 2-pass validated (legacy status name)
   DEEDED   → deed issued, ready for finality
   ANCHORED → Merkle root on Hedera, deed is FINAL
 
 Usage:
     python bin.py load --domain medical --limit 50     # Load pairs into bin
     python bin.py status                                # Show bin status
-    python bin.py run --workers 2                       # Run tribunal workers
-    python bin.py flush --domain medical                # Move scored → deeded
+    python bin.py run --workers 2                       # Run tribunal scales
+    python bin.py flush --domain medical                # Move weighed → deeded
 """
 import argparse
 import json
@@ -26,14 +26,23 @@ import sys
 import urllib.request
 from pathlib import Path
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+from swarm_config import cfg
 
-JUDGE_A_ENDPOINT = os.environ.get("JUDGE_A", "http://localhost:11434")
-JUDGE_B_ENDPOINT = os.environ.get("JUDGE_B", "http://192.168.0.99:11434")
-JUDGE_A_MODEL = "gemma3:12b"
-JUDGE_B_MODEL = "qwen2.5:7b"
+DB_URL = cfg.database_url
 
-SCORING_PROMPT = """You are an expert data quality judge. Score the following AI training pair on a scale of 0.00 to 1.00.
+# Scale config — reads from swarm.yaml (single source of truth)
+SCALE_A_ENDPOINT = os.environ.get("SCALE_A", "http://localhost:11434")
+SCALE_B_ENDPOINT = os.environ.get("SCALE_B", "http://localhost:11434")
+SCALE_A_MODEL = os.environ.get("SCALE_A_MODEL", cfg.scale_a_model)
+SCALE_B_MODEL = os.environ.get("SCALE_B_MODEL", cfg.scale_b_model)
+
+# Standing rule enforced by swarm_config
+cfg.validate_scale(SCALE_A_MODEL)
+cfg.validate_scale(SCALE_B_MODEL)
+
+# NOTE: Prompt text uses "score" language because models were calibrated on it.
+# Code uses "weight/scale" language. DB columns use legacy "judge_*" names.
+WEIGHING_PROMPT = """You are an expert data quality judge. Score the following AI training pair on a scale of 0.00 to 1.00.
 
 Evaluate on these criteria:
 1. ACCURACY — Are facts, calculations, and claims correct?
@@ -114,25 +123,27 @@ def load_pairs(domain, limit=50):
     return loaded
 
 
-def score_pair(messages, endpoint, model):
-    """Score a pair via ollama OpenAI-compatible API."""
+def weigh_pair(messages, endpoint, model):
+    """Weigh a pair on a single scale via ollama API."""
     system = next((m["content"] for m in messages if m["role"] == "system"), "")
     user = next((m["content"] for m in messages if m["role"] == "user"), "")
     assistant = next((m["content"] for m in messages if m["role"] == "assistant"), "")
 
-    prompt = SCORING_PROMPT.format(
+    prompt = WEIGHING_PROMPT.format(
         system=system[:1000], user=user[:1500], assistant=assistant[:2000]
     )
 
+    # /no_think disables reasoning blocks on Qwen 3.5
+    user_content = ("/no_think\n" + prompt) if "qwen" in model.lower() else prompt
     payload = json.dumps({
         "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "max_tokens": 200,
+        "messages": [{"role": "user", "content": user_content}],
+        "stream": False,
+        "options": {"temperature": 0.1},
     }).encode()
 
     req = urllib.request.Request(
-        f"{endpoint}/v1/chat/completions",
+        f"{endpoint}/api/chat",
         data=payload,
         headers={"Content-Type": "application/json"},
     )
@@ -140,10 +151,15 @@ def score_pair(messages, endpoint, model):
     try:
         resp = urllib.request.urlopen(req, timeout=120)
         data = json.loads(resp.read().decode())
-        response = data["choices"][0]["message"]["content"]
+        response = data["message"]["content"]
 
         # Parse JSON response
         response = response.strip()
+        # Strip <think>...</think> blocks from reasoning models (Qwen 3.5)
+        if "<think>" in response:
+            think_end = response.find("</think>")
+            if think_end != -1:
+                response = response[think_end + len("</think>"):].strip()
         if response.startswith("```"):
             response = response.split("```")[1].strip()
             if response.startswith("json"):
@@ -162,10 +178,9 @@ def score_pair(messages, endpoint, model):
         return None, str(e)
 
 
-def classify(score):
-    if score >= 0.75: return "royal_jelly"
-    if score >= 0.50: return "honey"
-    return "propolis"
+def classify(weight):
+    """Weight class from swarm.yaml — single source of truth."""
+    return cfg.classify(weight)
 
 
 def run_tribunal(batch_size=10):
@@ -190,8 +205,8 @@ def run_tribunal(batch_size=10):
         print("[bin] No pairs in queue")
         return 0
 
-    print(f"[bin] Judging {len(work)} pairs...")
-    scored = 0
+    print(f"[bin] Weighing {len(work)} pairs...")
+    weighed = 0
     flagged = 0
 
     for bin_id, pair_id in work:
@@ -202,25 +217,25 @@ def run_tribunal(batch_size=10):
             continue
         messages = row[0]
 
-        # PASS 1: Both judges score
-        score_a1, reason_a = score_pair(messages, JUDGE_A_ENDPOINT, JUDGE_A_MODEL)
-        score_b1, reason_b = score_pair(messages, JUDGE_B_ENDPOINT, JUDGE_B_MODEL)
+        # PASS 1: Both scales weigh
+        weight_a1, reason_a = weigh_pair(messages, SCALE_A_ENDPOINT, SCALE_A_MODEL)
+        weight_b1, reason_b = weigh_pair(messages, SCALE_B_ENDPOINT, SCALE_B_MODEL)
 
-        if score_a1 is None or score_b1 is None:
+        if weight_a1 is None or weight_b1 is None:
             cur.execute("UPDATE bin SET status = 'queued' WHERE id = %s", (bin_id,))
             conn.commit()
-            print(f"  [{bin_id}] ERROR: A={score_a1} B={score_b1} — requeued")
+            print(f"  [{bin_id}] ERROR: A={weight_a1} B={weight_b1} — requeued")
             continue
 
         # PASS 2: Validate the validator
-        score_a2, _ = score_pair(messages, JUDGE_A_ENDPOINT, JUDGE_A_MODEL)
-        score_b2, _ = score_pair(messages, JUDGE_B_ENDPOINT, JUDGE_B_MODEL)
+        weight_a2, _ = weigh_pair(messages, SCALE_A_ENDPOINT, SCALE_A_MODEL)
+        weight_b2, _ = weigh_pair(messages, SCALE_B_ENDPOINT, SCALE_B_MODEL)
 
-        if score_a2 is None: score_a2 = score_a1
-        if score_b2 is None: score_b2 = score_b1
+        if weight_a2 is None: weight_a2 = weight_a1
+        if weight_b2 is None: weight_b2 = weight_b1
 
-        drift_a = abs(score_a1 - score_a2)
-        drift_b = abs(score_b1 - score_b2)
+        drift_a = abs(weight_a1 - weight_a2)
+        drift_b = abs(weight_b1 - weight_b2)
         max_drift = max(drift_a, drift_b)
 
         if max_drift > 0.15:
@@ -231,11 +246,12 @@ def run_tribunal(batch_size=10):
             flagged += 1
             print(f"  [{bin_id}] FLAGGED: drift={max_drift:.3f}")
         else:
-            final_a = round((score_a1 + score_a2) / 2, 4)
-            final_b = round((score_b1 + score_b2) / 2, 4)
-            final = round((final_a + final_b) / 2, 4)
-            tier = classify(final)
+            final_a = round((weight_a1 + weight_a2) / 2, 4)
+            final_b = round((weight_b1 + weight_b2) / 2, 4)
+            consensus_weight = round((final_a + final_b) / 2, 4)
+            tier = classify(consensus_weight)
 
+            # DB columns use legacy names (judge_a_score, final_score) — Layer 2 migration pending
             cur.execute("""
                 UPDATE bin SET
                     status = 'scored',
@@ -244,16 +260,16 @@ def run_tribunal(batch_size=10):
                     final_score = %s, max_drift = %s, tier = %s,
                     scored_at = NOW()
                 WHERE id = %s
-            """, (final_a, score_a2, reason_a, final_b, score_b2, reason_b,
-                  final, max_drift, tier, bin_id))
-            scored += 1
-            print(f"  [{bin_id}] score={final:.3f} tier={tier} drift={max_drift:.3f}")
+            """, (final_a, weight_a2, reason_a, final_b, weight_b2, reason_b,
+                  consensus_weight, max_drift, tier, bin_id))
+            weighed += 1
+            print(f"  [{bin_id}] weight={consensus_weight:.3f} tier={tier} drift={max_drift:.3f}")
 
         conn.commit()
 
-    print(f"\n[bin] Batch complete: {scored} scored, {flagged} flagged")
+    print(f"\n[bin] Batch complete: {weighed} weighed, {flagged} flagged")
     conn.close()
-    return scored
+    return weighed
 
 
 def show_status():
@@ -322,8 +338,8 @@ if __name__ == "__main__":
     elif args.command == "run":
         if args.continuous:
             while True:
-                scored = run_tribunal(args.batch)
-                if scored == 0:
+                weighed = run_tribunal(args.batch)
+                if weighed == 0:
                     print("[bin] Queue empty. Waiting 30s...")
                     time.sleep(30)
         else:

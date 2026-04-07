@@ -32,8 +32,9 @@ import hashlib
 import time
 import urllib.request
 from mcp.server.fastmcp import FastMCP
+from swarm_config import cfg
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://swarm:swarmandbee2026@192.168.0.102:5433/swarmgraph")
+DB_URL = os.environ.get("DATABASE_URL", "")
 JUDGE_A = os.environ.get("JUDGE_A", "http://localhost:11434")
 JUDGE_B = os.environ.get("JUDGE_B", "http://192.168.0.99:11434")
 
@@ -184,9 +185,9 @@ def get_protocol() -> str:
             "merkle": "SHA256 Merkle trees, 50 deeds per batch",
             "anchoring": "Hedera HCS mainnet, 4 topics",
             "classification": {
-                "royal_jelly": ">= 0.75 — production ready",
-                "honey": "0.50-0.74 — improvable",
-                "propolis": "< 0.50 — intelligence",
+                "royal_jelly": f">= {cfg.rj_threshold} — production ready",
+                "honey": f"{cfg.honey_threshold}-{cfg.rj_threshold - 0.01:.2f} — improvable",
+                "propolis": f"< {cfg.honey_threshold} — intelligence",
             },
         },
         "rules": [
@@ -320,9 +321,7 @@ def verify_deed(block_id: str) -> dict:
         checks = {
             "independent_judges": ja_id != jb_id,
             "score_average": abs(((ja_s + jb_s) / 2) - final) < 0.01 if ja_s and jb_s else False,
-            "classification_match": (tier == "royal_jelly" and final >= 0.75) or
-                                    (tier == "honey" and 0.50 <= final < 0.75) or
-                                    (tier == "propolis" and final < 0.50),
+            "classification_match": tier == cfg.classify(final) if final is not None else False,
             "merkle_exists": merkle is not None,
             "validated": validated,
         }
