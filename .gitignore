@@ -11,3 +11,4 @@ __pycache__/
 .aidesigner/*
 !.aidesigner/.gitkeep
 .gitnexus
+node_modules/
